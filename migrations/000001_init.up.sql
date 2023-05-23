@@ -1,7 +1,6 @@
---@block
 CREATE TABLE IF NOT EXISTS `user` (
     `id` INT NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(255) NOT NULL,
+    `username` VARCHAR(255) UNIQUE NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `first_name` VARCHAR(255) NOT NULL,
     `last_name` VARCHAR(255) NOT NULL,
@@ -9,17 +8,15 @@ CREATE TABLE IF NOT EXISTS `user` (
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---@block
 CREATE TABLE IF NOT EXISTS `team`(
   `id` INT NOT NULL AUTO_INCREMENT,
-  `team_name` VARCHAR(255) NOT NULL,
+  `team_name` VARCHAR(255) UNIQUE NOT NULL,
   `team_leader_id` INT DEFAULT NULL,
   `team_description` TEXT NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`team_leader_id`) REFERENCES `user`(`id`) ON DELETE SET DEFAULT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---@block
 CREATE TABLE IF NOT EXISTS `membership`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `team_id` INT NOT NULL,
@@ -30,7 +27,6 @@ CREATE TABLE IF NOT EXISTS `membership`(
     FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---@block 
 CREATE TABLE IF NOT EXISTS `request`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `team_id` INT NOT NULL,
@@ -41,7 +37,6 @@ CREATE TABLE IF NOT EXISTS `request`(
     FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---@block
 CREATE TABLE IF NOT EXISTS `following`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `user_id` INT NOT NULL,
@@ -52,7 +47,6 @@ CREATE TABLE IF NOT EXISTS `following`(
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
---@block
 CREATE TABLE IF NOT EXISTS `post` (
 -- mandatory columns
     `id` INT NOT NULL AUTO_INCREMENT,
