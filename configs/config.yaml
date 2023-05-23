@@ -1,0 +1,6 @@
+db:
+  user : root
+  password : ${DB_PASSWORD}
+  name : berliner
+  address : localhost:3306
+  protocol : tcp
