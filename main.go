@@ -13,13 +13,15 @@ import (
 )
 
 func main() {
+
 	err := setupConfigs()
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	repository := repository.NewRepository()
-	services := services.NewService(*repository)
+	fmt.Println(os.Getenv("dsn"))
+	repository := repository.NewRepository(repository.SetupOrm(os.Getenv("dsn"), viper.GetString("db.migrationsUrl")))
+	services := services.NewService(repository)
 	handler := handler.NewHandler(services)
 
 	router := handler.InitRouter()
