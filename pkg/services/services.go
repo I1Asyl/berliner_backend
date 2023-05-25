@@ -41,6 +41,6 @@ type Services struct {
 }
 
 // returns new Services with all needed authorization and api services
-func NewService(repo repository.Repository) *Services {
+func NewService(repo *repository.Repository) *Services {
 	return &Services{Authorization: NewAuthService(*repo.Orm), Api: NewApiService(*repo.Orm)}
 }

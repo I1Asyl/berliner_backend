@@ -6,6 +6,8 @@ type Repository struct {
 	Orm *xorm.Engine
 }
 
-func NewRepository() *Repository {
-	return &Repository{Orm: SetupOrm()}
+//go:generate mockgen -source=repository.go -destination=mocks/repository.go
+
+func NewRepository(orm *xorm.Engine) *Repository {
+	return &Repository{Orm: orm}
 }

@@ -1,5 +1,7 @@
 .SILENT:
 
+.DEFAULT_GOAL := run
+
 run: 
 	go run .
 
@@ -8,3 +10,4 @@ database_up:
 
 database_down: 
 	migrate -source file://migrations/ -database "mysql://$(USERNAME):$(PASSWORD)@$(PROTOCOL)($(ADDRESS))/$(DBNAME)" down 
+

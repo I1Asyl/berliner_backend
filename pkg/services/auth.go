@@ -34,7 +34,6 @@ func (a AuthService) CheckUserAndPassword(userForm models.AuthorizationForm) (bo
 	var user models.User
 	a.orm.Where("username = ?", userForm.Username).Get(&user)
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userForm.Password))
-	fmt.Println(err)
 	if err != nil {
 		return false, err
 	}
