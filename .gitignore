@@ -1,5 +1,2 @@
 .env
-secrets
-mocks
-*_test.go
 gin.log

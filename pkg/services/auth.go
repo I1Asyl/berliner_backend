@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -70,6 +71,9 @@ func (a AuthService) GenerateToken(user models.AuthorizationForm) (string, error
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	if os.Getenv("JWT_SECRET") == "" {
+		log.Fatal("JWT_SECRET is not set, set your jwt password in .env file")
+	}
 	signedKey := []byte(os.Getenv("JWT_SECRET"))
 	signed, err := token.SignedString(signedKey)
 	return signed, err

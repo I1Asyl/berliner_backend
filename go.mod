@@ -9,9 +9,9 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/golang-migrate/migrate/v4 v4.15.2
-	github.com/golang/mock v1.6.0
 	github.com/joho/godotenv v1.5.1
 	golang.org/x/crypto v0.5.0
+	gotest.tools/v3 v3.3.0
 	xorm.io/xorm v1.3.2
 )
 
@@ -22,6 +22,7 @@ require (
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/docker/docker v20.10.13+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect

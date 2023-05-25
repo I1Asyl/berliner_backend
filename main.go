@@ -38,7 +38,9 @@ func setupConfigs() error {
 	if err := viper.ReadInConfig(); err != nil {
 		return err
 	}
-
+	if os.Getenv("DB_PASSWORD") == "" {
+		log.Fatal("DB_PASSWORD is not set, set your database password in .env file")
+	}
 	username, password, protocol, address, dbname := viper.GetString("db.user"), os.Getenv("DB_PASSWORD"), viper.GetString("db.protocol"), viper.GetString("db.address"), viper.GetString("db.name")
 
 	dsn := fmt.Sprintf("%v:%v@%v(%v)/%v", username, password, protocol, address, dbname)
