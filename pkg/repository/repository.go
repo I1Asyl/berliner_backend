@@ -1,13 +1,17 @@
 package repository
 
-import "xorm.io/xorm"
+import (
+	"github.com/golang-migrate/migrate/v4"
+	"xorm.io/xorm"
+)
 
 type Repository struct {
-	Orm *xorm.Engine
+	Orm       *xorm.Engine
+	Migration *migrate.Migrate
 }
 
 //go:generate mockgen -source=repository.go -destination=mocks/repository.go
 
-func NewRepository(orm *xorm.Engine) *Repository {
-	return &Repository{Orm: orm}
+func NewRepository(dsn string, migrationsPath string) *Repository {
+	return &Repository{Orm: NewOrm(dsn), Migration: NewMigration(dsn, migrationsPath)}
 }

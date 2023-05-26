@@ -16,6 +16,7 @@ import (
 
 var db *sql.DB
 var services *Services
+var repo *repository.Repository
 
 func TestMain(m *testing.M) {
 	// uses a sensible default on windows (tcp/http) and linux/osx (socket)
@@ -48,7 +49,8 @@ func TestMain(m *testing.M) {
 	}); err != nil {
 		log.Fatalf("Could not connect to database: %s", err)
 	}
-	services = NewService(repository.NewRepository(repository.SetupOrm(dsn, "file://../../migrations")))
+	repo = repository.NewRepository(dsn, "file://../../migrations")
+	services = NewService(repo)
 
 	code := m.Run()
 
@@ -104,6 +106,10 @@ func TestAddUser(t *testing.T) {
 			},
 		},
 	}
+	err := repo.Migration.Up()
+	if err != nil {
+		t.Errorf("Migration problems %s ", err)
+	}
 	for _, testCase := range testTable {
 		t.Run(testCase.name, func(t *testing.T) {
 			err := services.AddUser(testCase.inputUser)
@@ -113,6 +119,10 @@ func TestAddUser(t *testing.T) {
 				t.Errorf("Expected %v, got %v", testCase.expected, err)
 			}
 		})
+	}
+	err = repo.Migration.Down()
+	if err != nil {
+		t.Errorf("Migration problems %s ", err)
 	}
 }
 
@@ -139,14 +149,18 @@ func TestCheckUserAndPassword(t *testing.T) {
 			expected: false,
 		},
 	}
-	ans := services.AddUser(models.User{
+
+	err := repo.Migration.Up()
+	if err != nil {
+		t.Errorf("Migration problems %s ", err)
+	}
+	services.AddUser(models.User{
 		Username:  "asyl",
 		Password:  "Qqwerty1!.",
 		Email:     "email@som.com",
 		LastName:  "Yerassyl",
 		FirstName: "Altay",
 	})
-	fmt.Println(ans)
 	for _, testCase := range testTable {
 		t.Run(testCase.name, func(t *testing.T) {
 			ans, _ := services.CheckUserAndPassword(testCase.inputUser)
@@ -154,5 +168,9 @@ func TestCheckUserAndPassword(t *testing.T) {
 				t.Errorf("Expected %v, got %v", testCase.expected, ans)
 			}
 		})
+	}
+	err = repo.Migration.Down()
+	if err != nil {
+		t.Errorf("Migration problems %s ", err)
 	}
 }

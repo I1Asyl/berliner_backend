@@ -20,10 +20,13 @@ func main() {
 	}
 
 	fmt.Println(os.Getenv("dsn"))
-	repository := repository.NewRepository(repository.SetupOrm(os.Getenv("dsn"), viper.GetString("db.migrationsUrl")))
+	repository := repository.NewRepository(os.Getenv("dsn"), viper.GetString("db.migrationsUrl"))
 	services := services.NewService(repository)
 	handler := handler.NewHandler(services)
-
+	err = repository.Migration.Up()
+	if err != nil {
+		log.Printf("No changes: %v", err)
+	}
 	router := handler.InitRouter()
 	router.Run()
 }

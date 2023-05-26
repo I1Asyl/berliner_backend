@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -13,13 +12,7 @@ import (
 )
 
 // SetupOrm sets up the database connection
-func SetupOrm(dsn string, migrationsUrl string) *xorm.Engine {
-
-	err := migrateAll(dsn, migrationsUrl)
-
-	if err != nil {
-		log.Panic(err)
-	}
+func NewOrm(dsn string) *xorm.Engine {
 	engine, err := xorm.NewEngine("mysql", dsn)
 	if err != nil {
 		log.Fatalf("Error with creating a database engine: %v", err)
@@ -27,29 +20,27 @@ func SetupOrm(dsn string, migrationsUrl string) *xorm.Engine {
 	return engine
 }
 
-func migrateAll(dsn string, migrationsUrl string) error {
+// func NewMigrate(dsn string) *migrate.Migrate {
+
+func NewMigration(dsn string, migrationPath string) *migrate.Migrate {
 	dsn += "?multiStatements=true"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		return fmt.Errorf("Error with connecting to the database: %v", err)
+		log.Fatalf("Error with connecting to the database: %v", err)
 	}
 
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
 
 	if err != nil {
-		return fmt.Errorf("Error with creating a database driver: %v", err)
+		log.Fatalf("Error with creating a database driver: %v", err)
 	}
 
 	m, err := migrate.NewWithDatabaseInstance(
-		migrationsUrl,
+		migrationPath,
 		"mysql",
 		driver)
 	if err != nil {
-		return fmt.Errorf("error with a database: %v", err)
+		log.Fatalf("error with a database: %v", err)
 	}
-	err = m.Up()
-	if err != nil {
-		fmt.Println("No migrations")
-	}
-	return nil
+	return m
 }

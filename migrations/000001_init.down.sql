@@ -16,5 +16,3 @@ DROP TABLE IF EXISTS `following`;
 
 
 DROP TABLE IF EXISTS `user`;
-
-DROP TABLE schema_migrations;

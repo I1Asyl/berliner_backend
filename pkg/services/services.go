@@ -34,6 +34,10 @@ type Api interface {
 	CreateTeam(team models.Team, user models.User) map[string]string
 }
 
+// func clearAllData() {
+// 	query := "DELETE FROM users"
+// }
+
 // struct for all needed services
 type Services struct {
 	Authorization
