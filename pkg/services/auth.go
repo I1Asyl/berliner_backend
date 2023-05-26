@@ -59,13 +59,13 @@ func (a AuthService) ParseToken(token string) (string, error) {
 }
 
 // generate jwt token
-func (a AuthService) GenerateToken(user models.AuthorizationForm) (string, error) {
+func (a AuthService) GenerateToken(user models.AuthorizationForm, issueTime time.Time, expireTime time.Time) (string, error) {
 	claims := UserClaims{
 		user.Username,
 
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * 365 * time.Hour)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(expireTime),
+			IssuedAt:  jwt.NewNumericDate(issueTime),
 			Issuer:    "test",
 			Subject:   "somebody",
 		},

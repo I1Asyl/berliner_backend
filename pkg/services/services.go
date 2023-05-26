@@ -1,6 +1,8 @@
 package services
 
 import (
+	"time"
+
 	"github.com/I1Asyl/ginBerliner/models"
 	"github.com/I1Asyl/ginBerliner/pkg/repository"
 	"xorm.io/xorm"
@@ -16,7 +18,7 @@ type Transaction struct {
 type Authorization interface {
 	AddUser(user models.User) map[string]string
 	HashPassword(password string) string
-	GenerateToken(user models.AuthorizationForm) (string, error)
+	GenerateToken(user models.AuthorizationForm, issueTime time.Time, expireTime time.Time) (string, error)
 	ParseToken(token string) (string, error)
 	CheckUserAndPassword(userForm models.AuthorizationForm) (bool, error)
 }

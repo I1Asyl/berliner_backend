@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/I1Asyl/ginBerliner/models"
 	"github.com/gin-gonic/gin"
 )
@@ -46,7 +48,7 @@ func (h *Handler) login(ctx *gin.Context) {
 		return
 	}
 	// generate token
-	token, err := h.services.Authorization.GenerateToken(user)
+	token, err := h.services.Authorization.GenerateToken(user, time.Now(), time.Now().Add(time.Hour*24))
 	if err != nil {
 		ctx.JSON(401, gin.H{})
 		return
