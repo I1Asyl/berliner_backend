@@ -1,17 +1,36 @@
 package repository
 
 import (
+	"github.com/I1Asyl/ginBerliner/models"
 	"github.com/golang-migrate/migrate/v4"
-	"xorm.io/xorm"
 )
 
+type SqlQueries interface {
+	GetTeamByTeamName(teamName string) (models.Team, error)
+	GetUserByUserame(teamName string) (models.User, error)
+	GetUserTeams(user models.User) ([]models.Team, error)
+	AddMembership(models.Membership) error
+	AddUser(models.User) error
+	AddTeam(team models.Team) error
+	AddUserPost(post models.Post) error
+	AddTeamPost(post models.Post) error
+	AddPost(post models.Post) error
+	AddFollowing(following models.Following) error
+	StartTransaction() Transaction
+	GetTeamPosts(user models.User) ([]models.Post, error)
+	GetUserPosts(user models.User) ([]models.Post, error)
+	GetFollowing(user models.User) ([]models.User, error)
+	UpdateTeam(team models.Team) error
+	DeleteTeam(team models.Team) error
+}
+
 type Repository struct {
-	Orm       *xorm.Engine
+	SqlQueries
 	Migration *migrate.Migrate
 }
 
 //go:generate mockgen -source=repository.go -destination=mocks/repository.go
 
 func NewRepository(dsn string, migrationsPath string) *Repository {
-	return &Repository{Orm: NewOrm(dsn), Migration: NewMigration(dsn, migrationsPath)}
+	return &Repository{SqlQueries: NewDatabase(dsn), Migration: NewMigration(dsn, migrationsPath)}
 }

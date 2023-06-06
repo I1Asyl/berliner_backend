@@ -90,3 +90,33 @@ func (h Handler) getFollowing(ctx *gin.Context) {
 	}
 	ctx.JSON(200, ans)
 }
+
+// function for deleting a team based on its id
+func (h Handler) deleteTeam(ctx *gin.Context) {
+	var team models.Team
+	if err := ctx.BindJSON(&team); err != nil {
+		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the team model"))
+		return
+	}
+	if err := h.services.Api.DeleteTeam(team); err != nil {
+		ctx.Errors = append(ctx.Errors, &gin.Error{Err: errors.New("invalid data")})
+		ctx.JSON(422, err)
+	}
+
+	ctx.JSON(200, gin.H{})
+}
+
+func (h Handler) updateTeam(ctx *gin.Context) {
+	var team models.Team
+	if err := ctx.BindJSON(&team); err != nil {
+		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the team model"))
+		return
+	}
+
+	if err := h.services.Api.UpdateTeam(team); err != nil {
+		ctx.Errors = append(ctx.Errors, &gin.Error{Err: errors.New("invalid data")})
+		ctx.AbortWithError(422, err)
+	}
+
+	ctx.JSON(200, gin.H{})
+}

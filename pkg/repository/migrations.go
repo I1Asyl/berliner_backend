@@ -8,17 +8,9 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"xorm.io/xorm"
 )
 
 // SetupOrm sets up the database connection
-func NewOrm(dsn string) *xorm.Engine {
-	engine, err := xorm.NewEngine("mysql", dsn)
-	if err != nil {
-		log.Fatalf("Error with creating a database engine: %v", err)
-	}
-	return engine
-}
 
 // func NewMigrate(dsn string) *migrate.Migrate {
 

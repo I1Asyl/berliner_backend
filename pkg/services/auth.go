@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/I1Asyl/ginBerliner/models"
+	"github.com/I1Asyl/ginBerliner/pkg/repository"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-	"xorm.io/xorm"
 )
 
 // claims for jwt token
@@ -22,19 +22,21 @@ type UserClaims struct {
 // auth service struct
 type AuthService struct {
 	//database connection
-	orm xorm.Engine
+	repo repository.Repository
 }
 
 // NewAuthService returns a new AuthService instance
-func NewAuthService(orm xorm.Engine) *AuthService {
-	return &AuthService{orm: orm}
+func NewAuthService(repo repository.Repository) *AuthService {
+	return &AuthService{repo: repo}
 }
 
 // check if user exists and password is correct
 func (a AuthService) CheckUserAndPassword(userForm models.AuthorizationForm) (bool, error) {
-	var user models.User
-	a.orm.Where("username = ?", userForm.Username).Get(&user)
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userForm.Password))
+	user, err := a.repo.SqlQueries.GetUserByUserame(userForm.Username)
+	if err != nil {
+		return false, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userForm.Password))
 	if err != nil {
 		return false, err
 	}
@@ -85,12 +87,12 @@ func (a AuthService) AddUser(user models.User) map[string]string {
 	invalid := user.IsValid()
 	if len(invalid) == 0 {
 		user.Password = a.HashPassword(user.Password)
-		if _, err := a.orm.Insert(user); err != nil {
+		if err := a.repo.SqlQueries.AddUser(user); err != nil {
 			invalid["common"] = err.Error()
 		} else {
-			a.orm.Where("username=?", user.Username).Get(&user)
+			a.repo.SqlQueries.GetUserByUserame(user.Username)
 			following := models.Following{UserId: user.Id, FollowerId: user.Id}
-			a.orm.Insert(following)
+			a.repo.SqlQueries.AddFollowing(following)
 		}
 	}
 	return invalid
@@ -98,16 +100,9 @@ func (a AuthService) AddUser(user models.User) map[string]string {
 
 // get User model from username
 func (a AuthService) GetUserFromUsername(username string) (models.User, error) {
-	var user models.User
-	ok, err := a.orm.Where("username=?", username).Get(&user)
+	user, err := a.repo.SqlQueries.GetUserByUserame(username)
 
-	if err != nil {
-		return models.User{}, err
-	}
-	if !ok {
-		return models.User{}, errors.New("user does not exist")
-	}
-	return user, nil
+	return user, err
 }
 
 // hash password

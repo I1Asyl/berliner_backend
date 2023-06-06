@@ -30,42 +30,42 @@ func (ni *NullInt64) UnmarshalJSON(b []byte) error {
 // all models and their attributes(collumns) are defined here
 
 type Team struct {
-	Id              int    `json:"id"`
-	TeamLeaderId    int    `json:"teamLeaderId"`
-	TeamName        string `json:"teamName"`
-	TeamDescription string `json:"teamDescription"`
+	Id              int    `json:"id" db:"id"`
+	TeamLeaderId    int    `json:"teamLeaderId" db:"team_leader_id"`
+	TeamName        string `json:"teamName" db:"team_name"`
+	TeamDescription string `json:"teamDescription" db:"team_description"`
 }
 
 type User struct {
-	Id        int    `json:"id"`
-	Username  string `json:"username"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Password  string `json:"password"`
-	Email     string `json:"email"`
+	Id        int    `json:"id" db:"id"`
+	Username  string `json:"username" db:"username"`
+	FirstName string `json:"firstName" db:"first_name"`
+	LastName  string `json:"lastName" db:"last_name"`
+	Password  string `json:"password" db:"password"`
+	Email     string `json:"email" db:"email"`
 }
 
 type Membership struct {
-	Id       int  `json:"id"`
-	UserId   int  `json:"userId"`
-	TeamId   int  `json:"teamId"`
-	IsEditor bool `json:"isEditor"`
+	Id       int  `json:"id" db:"id"`
+	UserId   int  `json:"userId" db:"user_id"`
+	TeamId   int  `json:"teamId" db:"team_id"`
+	IsEditor bool `json:"isEditor" db:"is_editor"`
 }
 
 type Post struct {
-	Id           int       `json:"id"`
-	AuthorType   string    `json:"authorType"`
-	UserAuthorId NullInt64 `json:"userAuthorId"`
-	TeamAuthorId NullInt64 `json:"teamAuthorId"`
-	UpdatedAt    time.Time `json:"updatedAt" xorm:"updated"`
-	CreatedAt    time.Time `json:"createdAt" xorm:"created"`
-	Content      string    `json:"content"`
+	Id           int       `json:"id" db:"id"`
+	AuthorType   string    `json:"authorType" db:"author_type"`
+	UserAuthorId NullInt64 `json:"userAuthorId" db:"user_author_id"`
+	TeamAuthorId NullInt64 `json:"teamAuthorId" db:"team_author_id"`
+	UpdatedAt    time.Time `json:"updatedAt" db:"updated_at"`
+	CreatedAt    time.Time `json:"createdAt" db:"created_at"`
+	Content      string    `json:"content" db:"content"`
 }
 
 type Following struct {
-	Id         int `json:"id"`
-	UserId     int `json:"userId"`
-	FollowerId int `json:"follwerId"`
+	Id         int `json:"id" db:"id"`
+	UserId     int `json:"userId" db:"user_id"`
+	FollowerId int `json:"follwerId" db:"follower_id"`
 }
 
 type AuthorizationForm struct {

@@ -87,8 +87,8 @@ func (h *Handler) InitRouter() *gin.Engine {
 
 		private.GET("/teams", h.getTeams)
 		private.POST("/teams", h.createTeam)
-		//private.PATCH("/teams", h.updateTeam)
-		//private.DELETE("/teams", h.deleteTeam)
+		private.PATCH("/teams", h.updateTeam)
+		private.DELETE("/teams", h.deleteTeam)
 
 		// post
 		private.POST("/post", h.createPost)

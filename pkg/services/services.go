@@ -25,6 +25,8 @@ type Authorization interface {
 
 // all api services
 type Api interface {
+	DeleteTeam(team models.Team) error
+	UpdateTeam(team models.Team) error
 	GetFollowing(user models.User) ([]models.User, error)
 	GetUserByUsername(username string) (models.User, error)
 	GetTeamByTeamName(teamName string) (models.Team, error)
@@ -48,5 +50,5 @@ type Services struct {
 
 // returns new Services with all needed authorization and api services
 func NewService(repo *repository.Repository) *Services {
-	return &Services{Authorization: NewAuthService(*repo.Orm), Api: NewApiService(*repo.Orm)}
+	return &Services{Authorization: NewAuthService(*repo), Api: NewApiService(*repo)}
 }

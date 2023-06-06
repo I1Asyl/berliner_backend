@@ -19,6 +19,7 @@ import (
 var db *sql.DB
 var services *Services
 var repo *repository.Repository
+var testUser models.User
 
 func TestMain(m *testing.M) {
 	// uses a sensible default on windows (tcp/http) and linux/osx (socket)
@@ -39,6 +40,14 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Could not start resource: %s", err)
 	}
 
+	testUser = models.User{
+		Id:        1,
+		Username:  "asyl",
+		FirstName: "Yerassyl",
+		LastName:  "Altay",
+		Email:     "altayerasyl@gmail.com",
+		Password:  "Qqwerty1!.",
+	}
 	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	dsn := fmt.Sprintf("root:secret@tcp(localhost:%s)/berliner", resource.GetPort("3306/tcp"))
 	if err := pool.Retry(func() error {
@@ -155,13 +164,7 @@ func TestCheckUserAndPassword(t *testing.T) {
 	if err != nil {
 		t.Errorf("Migration problems %s ", err)
 	}
-	services.AddUser(models.User{
-		Username:  "asyl",
-		Password:  "Qqwerty1!.",
-		Email:     "email@som.com",
-		LastName:  "Yerassyl",
-		FirstName: "Altay",
-	})
+	services.AddUser(testUser)
 	for _, testCase := range testTable {
 		t.Run(testCase.name, func(t *testing.T) {
 			ans, _ := services.CheckUserAndPassword(testCase.inputUser)
@@ -281,3 +284,73 @@ func TestHashPassword(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateTeam(t *testing.T) {
+	testTable := []struct {
+		name       string
+		team       models.Team
+		teamLeader models.User
+		expected   map[string]string
+	}{
+		{
+			name: "success",
+			team: models.Team{
+				TeamName:        "Team",
+				TeamLeaderId:    1,
+				TeamDescription: "hoho",
+			},
+			teamLeader: testUser,
+			expected:   map[string]string{},
+		},
+		{
+			name: "error",
+			team: models.Team{
+				TeamName:        "Team",
+				TeamLeaderId:    1,
+				TeamDescription: "",
+			},
+			teamLeader: testUser,
+			expected: map[string]string{
+				"teamDescription": "Team description can not be empty",
+			},
+		},
+	}
+
+	for _, testCase := range testTable {
+
+		t.Run(testCase.name, func(t *testing.T) {
+			if err := repo.Migration.Up(); err != nil {
+				t.Errorf("Migration problems %s ", err)
+			}
+			services.AddUser(testUser)
+			err := services.CreateTeam(testCase.team, testUser)
+			if !reflect.DeepEqual(err, testCase.expected) {
+				t.Errorf("Expected %v, got %v", testCase.expected, err)
+			}
+			if err := repo.Migration.Down(); err != nil {
+				t.Errorf("Migration problems %s ", err)
+			}
+		})
+
+	}
+
+}
+
+// func TestGetFollowing(t *testing.T) {
+// 	testTable := []struct {
+// 		name     string
+// 		user     models.User
+// 		expected []string
+// 	}{
+// 		{
+// 			name: "success",
+// 			user: models.User{
+// 				Username:  "asyl",
+// 				FirstName: "XXXXX",
+// 				LastName:  "XXXXX",
+// 				Email:     "XXXXXXXXXXXXX",
+// 				Password:  "Qqwerty1!.",
+// 			},
+// 		},
+// 	}
+// }
