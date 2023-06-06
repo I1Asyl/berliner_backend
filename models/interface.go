@@ -50,14 +50,22 @@ func (post Post) IsValid() map[string]string {
 		validMap["content"] = "Invalid content"
 		return validMap
 	}
-	if post.AuthorType == "" {
-		validMap["authorType"] = "Invalid author type"
-	}
+	return validMap
+}
 
-	if post.AuthorType == "user" && !post.UserAuthorId.Valid {
+func (post UserPost) IsValid() map[string]string {
+	validMap := make(map[string]string)
+
+	if post.UserId == 0 || post.PostId == 0 {
 		validMap["userAuthorId"] = "Invalid user author id"
 	}
-	if post.AuthorType == "team" && !post.TeamAuthorId.Valid {
+	return validMap
+}
+
+func (post TeamPost) IsValid() map[string]string {
+	validMap := make(map[string]string)
+
+	if post.TeamId == 0 || post.PostId == 0 {
 		validMap["teamAuthorId"] = "Invalid team author id"
 	}
 	return validMap

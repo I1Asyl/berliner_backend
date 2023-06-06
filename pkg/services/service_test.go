@@ -336,21 +336,159 @@ func TestCreateTeam(t *testing.T) {
 
 }
 
-// func TestGetFollowing(t *testing.T) {
-// 	testTable := []struct {
-// 		name     string
-// 		user     models.User
-// 		expected []string
-// 	}{
-// 		{
-// 			name: "success",
-// 			user: models.User{
-// 				Username:  "asyl",
-// 				FirstName: "XXXXX",
-// 				LastName:  "XXXXX",
-// 				Email:     "XXXXXXXXXXXXX",
-// 				Password:  "Qqwerty1!.",
-// 			},
-// 		},
+// gets Team model by its name in the transaction
+func TestGetTeamByTeamName(t *testing.T) {
+	testTable := []struct {
+		name     string
+		teamName string
+		expected models.Team
+	}{
+		{
+			name:     "success",
+			teamName: "Team",
+			expected: models.Team{
+				TeamName:        "Team",
+				TeamLeaderId:    1,
+				TeamDescription: "hoho",
+				Id:              1,
+			},
+		},
+		{
+			name:     "error1",
+			teamName: "213",
+			expected: models.Team{},
+		},
+	}
+
+	if err := repo.Migration.Up(); err != nil {
+		t.Errorf("Migration problems %s ", err)
+	}
+	services.AddUser(testUser)
+	services.CreateTeam(models.Team{
+		TeamName:        "Team",
+		TeamLeaderId:    1,
+		TeamDescription: "hoho",
+	}, testUser)
+	for _, testCase := range testTable {
+		team, _ := services.GetTeamByTeamName(testCase.teamName)
+		if !reflect.DeepEqual(team, testCase.expected) {
+			t.Errorf("Expected %v, got %v", testCase.expected, team)
+		}
+	}
+	if err := repo.Migration.Down(); err != nil {
+		t.Errorf("Migration problems %s ", err)
+	}
+}
+
+// gets User model by username in the transaction
+func TestGetUserByUsername(t *testing.T) {
+	testTable := []struct {
+		name     string
+		username string
+		expected models.User
+	}{
+		{
+			name:     "success",
+			username: "asyl",
+			expected: testUser,
+		},
+		{
+			name:     "error",
+			username: "x",
+			expected: models.User{},
+		},
+	}
+	if err := repo.Migration.Up(); err != nil {
+		t.Errorf("Migration problems %s ", err)
+	}
+	services.AddUser(testUser)
+	for _, testCase := range testTable {
+		user, _ := services.GetUserByUsername(testCase.username)
+
+		// user's password is hashed, so we don't need to compare it
+		user.Password = testCase.expected.Password
+
+		if !reflect.DeepEqual(user, testCase.expected) {
+			t.Errorf("Expected %v, got %v", testCase.expected, user)
+		}
+	}
+	if err := repo.Migration.Down(); err != nil {
+		t.Errorf("Migration problems %s ", err)
+	}
+}
+
+// // create a new team in the database for the given user
+// func (a ApiService) CreateTeam(team models.Team, user models.User) map[string]string {
+
+// 	invalid := team.IsValid()
+// 	team.TeamLeaderId = user.Id
+// 	tx := a.repo.SqlQueries.StartTransaction()
+
+// 	if len(invalid) == 0 {
+// 		if err := tx.AddTeam(team); err != nil {
+// 			invalid["common"] = err.Error()
+// 		} else {
+// 			team, _ = tx.GetTeamByTeamName(team.TeamName)
+// 			membership := models.Membership{UserId: team.TeamLeaderId, TeamId: team.Id, IsEditor: true}
+// 			tx.AddMembership(membership)
+
+// 		}
 // 	}
+// 	err := tx.Commit()
+// 	if err != nil {
+// 		tx.Rollback()
+// 	}
+
+// 	return invalid
+// }
+
+// // create a new post in the database for the given user or team
+// func (a ApiService) CreatePost(post models.Post) map[string]string {
+
+// 	invalid := post.IsValid()
+
+// 	if len(invalid) == 0 {
+// 		err := a.repo.SqlQueries.AddPost(post)
+// 		if err != nil {
+// 			invalid["common"] = err.Error()
+// 		}
+// 	}
+
+// 	return invalid
+// }
+
+// // get all user's team posts from the database
+// func (a ApiService) GetPostsFromTeams(user models.User) ([]models.Post, error) {
+// 	posts, err := a.repo.SqlQueries.GetTeamPosts(user)
+// 	return posts, err
+// }
+
+// // get all user's following's posts from the database
+// func (a ApiService) GetPostsFromUsers(user models.User) ([]models.Post, error) {
+// 	posts, err := a.repo.SqlQueries.GetUserPosts(user)
+// 	return posts, err
+// }
+
+// // get all posts available for the given user from the database
+// func (a ApiService) GetAllPosts(user models.User) ([]models.Post, error) {
+// 	teamPosts, _ := a.GetPostsFromTeams(user)
+// 	userPosts, _ := a.GetPostsFromUsers(user)
+// 	posts := teamPosts
+// 	posts = append(posts, userPosts...)
+// 	return posts, nil
+// }
+
+// func (a ApiService) GetFollowing(user models.User) ([]models.User, error) {
+// 	users, err := a.repo.SqlQueries.GetFollowing(user)
+// 	return users, err
+// }
+
+// func (a ApiService) DeleteTeam(team models.Team) error {
+// 	err := a.repo.SqlQueries.DeleteTeam(team)
+// 	return err
+// }
+
+// func (a ApiService) UpdateTeam(team models.Team) error {
+// 	err := a.repo.SqlQueries.UpdateTeam(team)
+// 	return err
 // }

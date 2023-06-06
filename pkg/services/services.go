@@ -5,12 +5,7 @@ import (
 
 	"github.com/I1Asyl/ginBerliner/models"
 	"github.com/I1Asyl/ginBerliner/pkg/repository"
-	"xorm.io/xorm"
 )
-
-type Transaction struct {
-	*xorm.Session
-}
 
 //go:generate mockgen -source=services.go -destination=mocks/services.go
 
@@ -30,7 +25,7 @@ type Api interface {
 	GetFollowing(user models.User) ([]models.User, error)
 	GetUserByUsername(username string) (models.User, error)
 	GetTeamByTeamName(teamName string) (models.Team, error)
-	CreatePost(post models.Post) map[string]string
+	CreatePost(post models.Post, autthorId int) map[string]string
 	GetPostsFromTeams(user models.User) ([]models.Post, error)
 	GetPostsFromUsers(user models.User) ([]models.Post, error)
 	GetAllPosts(user models.User) ([]models.Post, error)

@@ -20,7 +20,7 @@ type Transaction struct {
 
 // SetupOrm sets up the database connection
 func NewDatabase(dsn string) Database {
-	db, err := sqlx.Open("mysql", dsn)
+	db, err := sqlx.Open("mysql", dsn+"?parseTime=true")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -102,50 +102,47 @@ func (db Transaction) AddTeam(team models.Team) error {
 	return err
 }
 
-func (db Database) AddUserPost(post models.Post) error {
-	_, err := db.Exec("INSERT INTO post (author_type, content, user_author_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?)", post.AuthorType, post.Content, post.UserAuthorId, post.UpdatedAt, post.CreatedAt)
-	return err
-}
-func (db Transaction) AddUserPost(post models.Post) error {
-	_, err := db.Exec("INSERT INTO post (author_type, content, user_author_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?)", post.AuthorType, post.Content, post.UserAuthorId, post.UpdatedAt, post.CreatedAt)
-	return err
-}
-
-func (db Database) AddTeamPost(post models.Post) error {
-	_, err := db.Exec("INSERT INTO post (author_type, content, team_author_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?)", post.AuthorType, post.Content, post.TeamAuthorId, post.UpdatedAt, post.CreatedAt)
-	return err
-}
-func (db Transaction) AddTeamPost(post models.Post) error {
-	_, err := db.Exec("INSERT INTO post (author_type, content, team_author_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?)", post.AuthorType, post.Content, post.TeamAuthorId, post.UpdatedAt, post.CreatedAt)
-	return err
-}
-
-func (db Database) AddPost(post models.Post) error {
-	if post.AuthorType == "user" {
-		return db.AddUserPost(post)
-	} else {
-		db.AddTeamPost(post)
-	}
-	return nil
+func (db Database) AddPost(post models.Post) (int, error) {
+	var id int
+	db.Get(&id, "SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'berliner' AND TABLE_NAME = 'post';")
+	_, err := db.Exec("INSERT INTO post (author_type, content, updated_at, created_at) VALUES (?, ?, ?, ?)", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt)
+	return id, err
 }
 func (db Transaction) AddPost(post models.Post) error {
-	if post.AuthorType == "user" {
-		return db.AddUserPost(post)
-	}
-	return db.AddTeamPost(post)
+	_, err := db.Exec("INSERT INTO post (author_type, content, updated_at, created_at) VALUES (?, ?, ?, ?)", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt)
+	return err
+}
+
+func (db Database) AddUserPost(post models.UserPost) error {
+	_, err := db.Exec("INSERT INTO user_post (user_id, post_id) VALUES (?, ?)", post.UserId, post.PostId)
+	return err
+}
+func (db Transaction) AddUserPost(post models.UserPost) error {
+	_, err := db.Exec("INSERT INTO user_post (user_id, post_id) VALUES (?, ?)", post.UserId, post.PostId)
+	return err
+}
+
+func (db Database) AddTeamPost(post models.TeamPost) error {
+	_, err := db.Exec("INSERT INTO team_post (team_id, post_id) VALUES (?, ?)", post.TeamId, post.PostId)
+	return err
+}
+func (db Transaction) AddTeamPost(post models.TeamPost) error {
+	_, err := db.Exec("INSERT INTO team_post (team_id, post_id) VALUES (?, ?)", post.TeamId, post.PostId)
+	return err
 }
 
 func (db Database) GetUserPosts(user models.User) ([]models.Post, error) {
 	var posts []models.Post
 	users := "SELECT following.user_id FROM following WHERE following.follower_id=?"
-	err := db.Select(&posts, fmt.Sprintf("SELECT * FROM post WHERE user_author_id in (%v)", users), user.Id)
+	userPostsId := fmt.Sprintf("SELECT user_post.post_id FROM user_post WHERE user_post.user_id in (%v)", users)
+	err := db.Select(&posts, fmt.Sprintf("SELECT * FROM post WHERE post_id in (%v)", userPostsId), user.Id)
 	return posts, err
 }
 
 func (db Database) GetTeamPosts(user models.User) ([]models.Post, error) {
 	var posts []models.Post
 	teams := "SELECT membership.team_id FROM membership WHERE membership.user_id=?"
-	err := db.Select(&posts, fmt.Sprintf("SELECT * FROM post WHERE team_author_id in (%v)", teams), user.Id)
+	err := db.Select(&posts, fmt.Sprintf("SELECT post.* FROM post LEFT JOIN team_post ON team_post.post_id = post.id WHERE team_post.team_id in (%v)", teams), user.Id)
 	return posts, err
 }
 

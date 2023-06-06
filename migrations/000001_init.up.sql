@@ -53,11 +53,25 @@ CREATE TABLE IF NOT EXISTS `post` (
     `content` TEXT NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `author_type` VARCHAR(255) NOT NULL,
-    `user_author_id` INT,
-    `team_author_id` INT,
+    `author_type` ENUM('user', 'team') NOT NULL,
     `is_public` TINYINT(1) NOT NULL DEFAULT 1,
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `user_post` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NOT NULL,
+    `post_id` INT NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_author_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`team_author_id`) REFERENCES `team`(`id`) ON DELETE CASCADE
+    FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`post_id`) REFERENCES `post`(`id`) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `team_post` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `team_id` INT NOT NULL,
+    `post_id` INT NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`team_id`) REFERENCES `team`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`post_id`) REFERENCES `post`(`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

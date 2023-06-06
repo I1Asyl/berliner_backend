@@ -53,13 +53,24 @@ type Membership struct {
 }
 
 type Post struct {
-	Id           int       `json:"id" db:"id"`
-	AuthorType   string    `json:"authorType" db:"author_type"`
-	UserAuthorId NullInt64 `json:"userAuthorId" db:"user_author_id"`
-	TeamAuthorId NullInt64 `json:"teamAuthorId" db:"team_author_id"`
-	UpdatedAt    time.Time `json:"updatedAt" db:"updated_at"`
-	CreatedAt    time.Time `json:"createdAt" db:"created_at"`
-	Content      string    `json:"content" db:"content"`
+	Id         int       `json:"id" db:"id"`
+	UpdatedAt  time.Time `json:"updatedAt" db:"updated_at"`
+	CreatedAt  time.Time `json:"createdAt" db:"created_at"`
+	AuthorType string    `json:"authorType" db:"author_type"`
+	Content    string    `json:"content" db:"content"`
+	IsPublic   bool      `json:"isPublic" db:"is_public"`
+}
+
+type UserPost struct {
+	Id     int `json:"id" db:"id"`
+	UserId int `json:"userId" db:"user_id"`
+	PostId int `json:"postId" db:"post_id"`
+}
+
+type TeamPost struct {
+	Id     int `json:"id" db:"id"`
+	TeamId int `json:"teamId" db:"team_id"`
+	PostId int `json:"postId" db:"post_id"`
 }
 
 type Following struct {

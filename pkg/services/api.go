@@ -1,7 +1,7 @@
 package services
 
 import (
-	"errors"
+	"time"
 
 	"github.com/I1Asyl/ginBerliner/models"
 	"github.com/I1Asyl/ginBerliner/pkg/repository"
@@ -19,30 +19,6 @@ func NewApiService(repo repository.Repository) *ApiService {
 }
 
 // gets Team model by its name in the transaction
-func (session *Transaction) GetTeamByTeamName(teamName string) (models.Team, error) {
-	var team models.Team
-	ok, err := session.Where("team_name=?", teamName).Get(&team)
-	if err != nil {
-		return models.Team{}, err
-	}
-	if !ok {
-		return models.Team{}, errors.New("team does not exist")
-	}
-	return team, nil
-}
-
-// gets User model by username in the transaction
-func (session *Transaction) GetTeamByUsername(username string) (models.User, error) {
-	var user models.User
-	ok, err := session.Where("username=?", username).Get(&user)
-	if err != nil {
-		return models.User{}, err
-	}
-	if !ok {
-		return models.User{}, errors.New("team does not exist")
-	}
-	return user, nil
-}
 
 // gets Team model by its name from the database
 func (a ApiService) GetTeamByTeamName(teamName string) (models.Team, error) {
@@ -95,17 +71,24 @@ func (a ApiService) CreateTeam(team models.Team, user models.User) map[string]st
 }
 
 // create a new post in the database for the given user or team
-func (a ApiService) CreatePost(post models.Post) map[string]string {
-
+func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string {
+	post.CreatedAt = time.Now()
+	post.UpdatedAt = time.Now()
 	invalid := post.IsValid()
-
 	if len(invalid) == 0 {
-		err := a.repo.SqlQueries.AddPost(post)
+		id, err := a.repo.SqlQueries.AddPost(post)
 		if err != nil {
 			invalid["common"] = err.Error()
+		} else {
+			if post.AuthorType == "user" {
+				post := models.UserPost{UserId: authorId, PostId: id}
+				a.repo.SqlQueries.AddUserPost(post)
+			} else {
+				post := models.TeamPost{TeamId: authorId, PostId: id}
+				a.repo.SqlQueries.AddTeamPost(post)
+			}
 		}
 	}
-
 	return invalid
 }
 

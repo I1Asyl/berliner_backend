@@ -4,6 +4,7 @@ package handler
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/I1Asyl/ginBerliner/models"
 	"github.com/gin-gonic/gin"
@@ -44,12 +45,17 @@ func (h Handler) createTeam(ctx *gin.Context) {
 // method for posting a post
 func (h Handler) createPost(ctx *gin.Context) {
 	var post models.Post
+	id, err := strconv.Atoi(ctx.Query("id"))
+	if err != nil {
+		ctx.AbortWithError(400, errors.New("invalid id"))
+	}
+
 	if err := ctx.BindJSON(&post); err != nil {
 		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the post model"))
 		return
 	}
 
-	if invalid := h.services.Api.CreatePost(post); len(invalid) > 0 {
+	if invalid := h.services.Api.CreatePost(post, id); len(invalid) > 0 {
 		ctx.Errors = append(ctx.Errors, &gin.Error{Err: errors.New("invalid data")})
 		ctx.JSON(422, invalid)
 		return
@@ -74,7 +80,7 @@ func (h Handler) getPosts(ctx *gin.Context) {
 		ans, err = h.services.Api.GetAllPosts(user)
 	}
 	if err != nil {
-		ctx.JSON(400, gin.H{})
+		ctx.AbortWithError(400, err)
 		return
 	}
 	ctx.JSON(200, ans)
