@@ -62,9 +62,10 @@ type Post struct {
 }
 
 type UserPost struct {
-	Id     int `json:"id" db:"id"`
-	UserId int `json:"userId" db:"user_id"`
-	PostId int `json:"postId" db:"post_id"`
+	Id       int    `json:"id" db:"id"`
+	UserId   int    `json:"userId" db:"user_id"`
+	PostId   int    `json:"postId" db:"post_id"`
+	Username string `json:"username"`
 }
 
 type TeamPost struct {

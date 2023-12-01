@@ -4,6 +4,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/I1Asyl/ginBerliner/models"
@@ -49,8 +50,11 @@ func (h Handler) createPost(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithError(400, errors.New("invalid id"))
 	}
-
 	if err := ctx.BindJSON(&post); err != nil {
+		fmt.Println(post, err)
+		var js interface{}
+		err = ctx.BindJSON(&js)
+		fmt.Println(js, err)
 		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the post model"))
 		return
 	}

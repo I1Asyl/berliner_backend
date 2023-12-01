@@ -103,10 +103,10 @@ func (db Transaction) AddTeam(team models.Team) error {
 }
 
 func (db Database) AddPost(post models.Post) (int, error) {
-	var id int
-	db.Get(&id, "SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'berliner' AND TABLE_NAME = 'post';")
-	_, err := db.Exec("INSERT INTO post (author_type, content, updated_at, created_at) VALUES (?, ?, ?, ?)", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt)
-	return id, err
+	var id int64
+	res, err := db.Exec("INSERT INTO post (author_type, content, updated_at, created_at) VALUES (?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt)
+	id, err = res.LastInsertId()
+	return int(id), err
 }
 func (db Transaction) AddPost(post models.Post) error {
 	_, err := db.Exec("INSERT INTO post (author_type, content, updated_at, created_at) VALUES (?, ?, ?, ?)", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt)
@@ -115,6 +115,7 @@ func (db Transaction) AddPost(post models.Post) error {
 
 func (db Database) AddUserPost(post models.UserPost) error {
 	_, err := db.Exec("INSERT INTO user_post (user_id, post_id) VALUES (?, ?)", post.UserId, post.PostId)
+	fmt.Println(err, post.UserId, post.PostId)
 	return err
 }
 func (db Transaction) AddUserPost(post models.UserPost) error {
@@ -134,8 +135,8 @@ func (db Transaction) AddTeamPost(post models.TeamPost) error {
 func (db Database) GetUserPosts(user models.User) ([]models.Post, error) {
 	var posts []models.Post
 	users := "SELECT following.user_id FROM following WHERE following.follower_id=?"
-	userPostsId := fmt.Sprintf("SELECT user_post.post_id FROM user_post WHERE user_post.user_id in (%v)", users)
-	err := db.Select(&posts, fmt.Sprintf("SELECT * FROM post WHERE post_id in (%v)", userPostsId), user.Id)
+	userPostsId := fmt.Sprintf("SELECT user_post.post_id FROM user_post WHERE user_post.user_id in (%v) OR user_post.user_id = ?", users)
+	err := db.Select(&posts, fmt.Sprintf("SELECT * FROM post WHERE id in (%v)", userPostsId), user.Id, user.Id)
 	return posts, err
 }
 

@@ -77,6 +77,7 @@ func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string
 	invalid := post.IsValid()
 	if len(invalid) == 0 {
 		id, err := a.repo.SqlQueries.AddPost(post)
+
 		if err != nil {
 			invalid["common"] = err.Error()
 		} else {
