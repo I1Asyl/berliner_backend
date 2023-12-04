@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"time"
 
 	"github.com/I1Asyl/ginBerliner/models"
@@ -18,12 +19,15 @@ func (h *Handler) signUp(ctx *gin.Context) {
 	var user models.User
 	//check if user is valid json type
 	if err := ctx.BindJSON(&user); err != nil {
-		ctx.JSON(401, gin.H{})
+		ctx.AbortWithError(500, err)
 		return
 	}
 
 	//check if user data is valid
 	if invalid := h.services.Authorization.AddUser(user); len(invalid) > 0 {
+		if err, ok := invalid["error"]; ok {
+			ctx.AbortWithError(500, errors.New(err))
+		}
 		ctx.AbortWithStatusJSON(422, invalid)
 		return
 	}
@@ -35,22 +39,20 @@ func (h *Handler) login(ctx *gin.Context) {
 	var user models.AuthorizationForm
 	//check if user is valid json type
 	if err := ctx.BindJSON(&user); err != nil {
-		ctx.JSON(401, gin.H{})
+		ctx.AbortWithError(500, err)
 		return
 	}
 
 	//check if user data is valid
 	exist, err := h.services.Authorization.CheckUserAndPassword(user)
 	if !exist || err != nil {
-		ctx.JSON(401, gin.H{
-			"error": "username or password is incorrect",
-		})
+		ctx.AbortWithError(401, errors.New("username or password is incorrect"))
 		return
 	}
 	// generate token
 	token, err := h.services.Authorization.GenerateToken(user, time.Now(), time.Now().Add(time.Hour*24))
 	if err != nil {
-		ctx.JSON(401, gin.H{})
+		ctx.AbortWithError(500, errors.New(err.Error()))
 		return
 	}
 	ctx.JSON(200, gin.H{

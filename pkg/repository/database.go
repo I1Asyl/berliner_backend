@@ -113,11 +113,20 @@ func (db Database) AddTeamPost(post models.TeamPost) error {
 	return err
 }
 
-func (db Database) GetUserPosts(user models.User) ([]models.UserPost, error) {
-	var posts []models.UserPost
+func (db Database) GetUserPosts(user models.User) ([]struct {
+	models.User
+	models.UserPost
+}, error) {
+	//var posts []models.UserPost
 	users := "SELECT following.user_id FROM following WHERE following.follower_id=?"
-	err := db.Select(&posts, fmt.Sprintf("SELECT * FROM user_post WHERE user_id in (%v) OR user_id = ?", users), user.Id, user.Id)
-	return posts, err
+	var newTable []struct {
+		models.User
+		models.UserPost
+	}
+	err := db.Select(&newTable, fmt.Sprintf("SELECT user_post.*, user.username, user.first_name, user.last_name FROM user_post LEFT JOIN user on user_post.user_id = user.id WHERE user_post.user_id in (%v) OR user_post.user_id = ? ORDER BY updated_at DESC", users), user.Id, user.Id)
+	return newTable, err
+	//err = db.Select(&posts, fmt.Sprintf("SELECT * FROM user_post WHERE user_id in (%v) OR user_id = ?", users), user.Id, user.Id)
+
 }
 
 // func (db Database) GetTeamPosts(user models.User) ([]models.Post, error) {

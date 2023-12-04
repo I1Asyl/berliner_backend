@@ -54,7 +54,7 @@ func (a ApiService) CreateTeam(team models.Team, user models.User) map[string]st
 
 	if len(invalid) == 0 {
 		if err := tx.AddTeam(team); err != nil {
-			invalid["common"] = err.Error()
+			invalid["error"] = err.Error()
 		} else {
 			team, _ = tx.GetTeamByTeamName(team.TeamName)
 			membership := models.Membership{UserId: team.TeamLeaderId, TeamId: team.Id, IsEditor: true}
@@ -74,18 +74,21 @@ func (a ApiService) CreateTeam(team models.Team, user models.User) map[string]st
 func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string {
 	post.CreatedAt = time.Now()
 	post.UpdatedAt = time.Now()
-	invalid := make(map[string]string)
-
-	invalid = post.IsValid()
+	invalid := post.IsValid()
 	if len(invalid) == 0 {
 		if post.AuthorType == "user" {
 			post := models.UserPost{UserId: authorId, Post: post}
 			err := a.repo.SqlQueries.AddUserPost(post)
-			invalid["err"] = err.Error()
+			if err != nil {
+				invalid["error"] = err.Error()
+			}
+
 		} else {
 			post := models.TeamPost{TeamId: authorId, Post: post}
 			err := a.repo.SqlQueries.AddTeamPost(post)
-			invalid["err"] = err.Error()
+			if err != nil {
+				invalid["error"] = err.Error()
+			}
 		}
 
 	}
@@ -99,7 +102,10 @@ func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string
 // }
 
 // get all user's following's posts from the database
-func (a ApiService) GetPostsFromUsers(user models.User) ([]models.UserPost, error) {
+func (a ApiService) GetPostsFromUsers(user models.User) ([]struct {
+	models.User
+	models.UserPost
+}, error) {
 	posts, err := a.repo.SqlQueries.GetUserPosts(user)
 	return posts, err
 }

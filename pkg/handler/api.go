@@ -35,6 +35,9 @@ func (h Handler) createTeam(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	user := res.(models.User)
 	if invalid := h.services.Api.CreateTeam(team, user); len(invalid) > 0 {
+		if err, ok := invalid["error"]; ok {
+			ctx.AbortWithError(500, errors.New(err))
+		}
 		ctx.AbortWithError(422, errors.New("invalid data"))
 
 		return
@@ -60,6 +63,9 @@ func (h Handler) createPost(ctx *gin.Context) {
 	}
 
 	if invalid := h.services.Api.CreatePost(post, id); len(invalid) > 0 {
+		if err, ok := invalid["error"]; ok {
+			ctx.AbortWithError(500, errors.New(err))
+		}
 		ctx.AbortWithError(422, errors.New("invalid data"))
 		return
 	}
@@ -71,7 +77,10 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	authorType := ctx.DefaultQuery("author", "")
 	user := res.(models.User)
-	var ans []models.UserPost
+	var ans []struct {
+		models.User
+		models.UserPost
+	}
 	var err error
 
 	// check if needed post should be written by team, user or all
@@ -82,11 +91,11 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	} else {
 		//ans, err = h.services.Api.GetAllPosts(user)
 	}
-	fmt.Println(err)
 	if err != nil {
 		ctx.AbortWithError(400, err)
 		return
 	}
+
 	ctx.JSON(200, ans)
 }
 
@@ -112,7 +121,6 @@ func (h Handler) deleteTeam(ctx *gin.Context) {
 		ctx.AbortWithError(422, errors.New("invalid data"))
 
 	}
-
 	ctx.JSON(200, gin.H{})
 }
 

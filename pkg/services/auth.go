@@ -88,7 +88,7 @@ func (a AuthService) AddUser(user models.User) map[string]string {
 	if len(invalid) == 0 {
 		user.Password = a.HashPassword(user.Password)
 		if err := a.repo.SqlQueries.AddUser(user); err != nil {
-			invalid["common"] = err.Error()
+			invalid["error"] = err.Error()
 		} else {
 			a.repo.SqlQueries.GetUserByUserame(user.Username)
 			following := models.Following{UserId: user.Id, FollowerId: user.Id}
