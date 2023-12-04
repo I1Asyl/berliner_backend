@@ -102,50 +102,30 @@ func (db Transaction) AddTeam(team models.Team) error {
 	return err
 }
 
-func (db Database) AddPost(post models.Post) (int, error) {
-	var id int64
-	res, err := db.Exec("INSERT INTO post (author_type, content, updated_at, created_at) VALUES (?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt)
-	id, err = res.LastInsertId()
-	return int(id), err
-}
-func (db Transaction) AddPost(post models.Post) error {
-	_, err := db.Exec("INSERT INTO post (author_type, content, updated_at, created_at) VALUES (?, ?, ?, ?)", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt)
-	return err
-}
-
 func (db Database) AddUserPost(post models.UserPost) error {
-	_, err := db.Exec("INSERT INTO user_post (user_id, post_id) VALUES (?, ?)", post.UserId, post.PostId)
-	fmt.Println(err, post.UserId, post.PostId)
-	return err
-}
-func (db Transaction) AddUserPost(post models.UserPost) error {
-	_, err := db.Exec("INSERT INTO user_post (user_id, post_id) VALUES (?, ?)", post.UserId, post.PostId)
+	_, err := db.Exec("INSERT INTO user_post (author_type, content, updated_at, created_at, user_id) VALUES (?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.UserId)
+	fmt.Println(err)
 	return err
 }
 
 func (db Database) AddTeamPost(post models.TeamPost) error {
-	_, err := db.Exec("INSERT INTO team_post (team_id, post_id) VALUES (?, ?)", post.TeamId, post.PostId)
-	return err
-}
-func (db Transaction) AddTeamPost(post models.TeamPost) error {
-	_, err := db.Exec("INSERT INTO team_post (team_id, post_id) VALUES (?, ?)", post.TeamId, post.PostId)
+	_, err := db.Exec("INSERT INTO team_post (author_type, content, updated_at, created_at, team_id) VALUES (?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.TeamId)
 	return err
 }
 
-func (db Database) GetUserPosts(user models.User) ([]models.Post, error) {
-	var posts []models.Post
+func (db Database) GetUserPosts(user models.User) ([]models.UserPost, error) {
+	var posts []models.UserPost
 	users := "SELECT following.user_id FROM following WHERE following.follower_id=?"
-	userPostsId := fmt.Sprintf("SELECT user_post.post_id FROM user_post WHERE user_post.user_id in (%v) OR user_post.user_id = ?", users)
-	err := db.Select(&posts, fmt.Sprintf("SELECT * FROM post WHERE id in (%v)", userPostsId), user.Id, user.Id)
+	err := db.Select(&posts, fmt.Sprintf("SELECT * FROM user_post WHERE user_id in (%v) OR user_id = ?", users), user.Id, user.Id)
 	return posts, err
 }
 
-func (db Database) GetTeamPosts(user models.User) ([]models.Post, error) {
-	var posts []models.Post
-	teams := "SELECT membership.team_id FROM membership WHERE membership.user_id=?"
-	err := db.Select(&posts, fmt.Sprintf("SELECT post.* FROM post LEFT JOIN team_post ON team_post.post_id = post.id WHERE team_post.team_id in (%v)", teams), user.Id)
-	return posts, err
-}
+// func (db Database) GetTeamPosts(user models.User) ([]models.Post, error) {
+// 	var posts []models.Post
+// 	teams := "SELECT membership.team_id FROM membership WHERE membership.user_id=?"
+// 	err := db.Select(&posts, fmt.Sprintf("SELECT post.* FROM post LEFT JOIN team_post ON team_post.post_id = post.id WHERE team_post.team_id in (%v)", teams), user.Id)
+// 	return posts, err
+// }
 
 func (db Database) GetFollowing(user models.User) ([]models.User, error) {
 	var users []models.User

@@ -56,7 +56,7 @@ func (post Post) IsValid() map[string]string {
 func (post UserPost) IsValid() map[string]string {
 	validMap := make(map[string]string)
 
-	if post.UserId == 0 || post.PostId == 0 {
+	if post.UserId == 0 {
 		validMap["userAuthorId"] = "Invalid user author id"
 	}
 	return validMap
@@ -65,7 +65,7 @@ func (post UserPost) IsValid() map[string]string {
 func (post TeamPost) IsValid() map[string]string {
 	validMap := make(map[string]string)
 
-	if post.TeamId == 0 || post.PostId == 0 {
+	if post.TeamId == 0 {
 		validMap["teamAuthorId"] = "Invalid team author id"
 	}
 	return validMap

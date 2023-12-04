@@ -14,11 +14,10 @@ type SqlQueries interface {
 	AddTeam(team models.Team) error
 	AddUserPost(post models.UserPost) error
 	AddTeamPost(post models.TeamPost) error
-	AddPost(post models.Post) (int, error)
 	AddFollowing(following models.Following) error
 	StartTransaction() Transaction
-	GetTeamPosts(user models.User) ([]models.Post, error)
-	GetUserPosts(user models.User) ([]models.Post, error)
+	//GetTeamPosts(user models.User) ([]models.Post, error)
+	GetUserPosts(user models.User) ([]models.UserPost, error)
 	GetFollowing(user models.User) ([]models.User, error)
 	UpdateTeam(team models.Team) error
 	DeleteTeam(team models.Team) error

@@ -51,7 +51,6 @@ type Membership struct {
 	TeamId   int  `json:"teamId" db:"team_id"`
 	IsEditor bool `json:"isEditor" db:"is_editor"`
 }
-
 type Post struct {
 	Id         int       `json:"id" db:"id"`
 	UpdatedAt  time.Time `json:"updatedAt" db:"updated_at"`
@@ -60,18 +59,14 @@ type Post struct {
 	Content    string    `json:"content" db:"content"`
 	IsPublic   bool      `json:"isPublic" db:"is_public"`
 }
-
 type UserPost struct {
-	Id       int    `json:"id" db:"id"`
-	UserId   int    `json:"userId" db:"user_id"`
-	PostId   int    `json:"postId" db:"post_id"`
-	Username string `json:"username"`
+	UserId int `json:"userId" db:"user_id"`
+	Post
 }
 
 type TeamPost struct {
-	Id     int `json:"id" db:"id"`
-	TeamId int `json:"teamId" db:"team_id"`
-	PostId int `json:"postId" db:"post_id"`
+	Post
+	TeamId int `json:"postId" db:"post_id"`
 }
 
 type Following struct {

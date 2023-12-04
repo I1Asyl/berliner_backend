@@ -35,8 +35,8 @@ func (h Handler) createTeam(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	user := res.(models.User)
 	if invalid := h.services.Api.CreateTeam(team, user); len(invalid) > 0 {
-		ctx.Errors = append(ctx.Errors, &gin.Error{Err: errors.New("invalid data")})
-		ctx.JSON(422, invalid)
+		ctx.AbortWithError(422, errors.New("invalid data"))
+
 		return
 	}
 
@@ -60,8 +60,7 @@ func (h Handler) createPost(ctx *gin.Context) {
 	}
 
 	if invalid := h.services.Api.CreatePost(post, id); len(invalid) > 0 {
-		ctx.Errors = append(ctx.Errors, &gin.Error{Err: errors.New("invalid data")})
-		ctx.JSON(422, invalid)
+		ctx.AbortWithError(422, errors.New("invalid data"))
 		return
 	}
 	ctx.JSON(200, gin.H{})
@@ -72,17 +71,18 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	authorType := ctx.DefaultQuery("author", "")
 	user := res.(models.User)
-	var ans []models.Post
+	var ans []models.UserPost
 	var err error
 
 	// check if needed post should be written by team, user or all
 	if authorType == "team" {
-		ans, err = h.services.Api.GetPostsFromTeams(user)
+		//ans, err = h.services.Api.GetPostsFromTeams(user)
 	} else if authorType == "user" {
 		ans, err = h.services.Api.GetPostsFromUsers(user)
 	} else {
-		ans, err = h.services.Api.GetAllPosts(user)
+		//ans, err = h.services.Api.GetAllPosts(user)
 	}
+	fmt.Println(err)
 	if err != nil {
 		ctx.AbortWithError(400, err)
 		return
@@ -109,8 +109,8 @@ func (h Handler) deleteTeam(ctx *gin.Context) {
 		return
 	}
 	if err := h.services.Api.DeleteTeam(team); err != nil {
-		ctx.Errors = append(ctx.Errors, &gin.Error{Err: errors.New("invalid data")})
-		ctx.JSON(422, err)
+		ctx.AbortWithError(422, errors.New("invalid data"))
+
 	}
 
 	ctx.JSON(200, gin.H{})
@@ -124,8 +124,7 @@ func (h Handler) updateTeam(ctx *gin.Context) {
 	}
 
 	if err := h.services.Api.UpdateTeam(team); err != nil {
-		ctx.Errors = append(ctx.Errors, &gin.Error{Err: errors.New("invalid data")})
-		ctx.AbortWithError(422, err)
+		ctx.AbortWithError(422, errors.New("invalid data"))
 	}
 
 	ctx.JSON(200, gin.H{})

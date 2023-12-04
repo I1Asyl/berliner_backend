@@ -26,9 +26,9 @@ type Api interface {
 	GetUserByUsername(username string) (models.User, error)
 	GetTeamByTeamName(teamName string) (models.Team, error)
 	CreatePost(post models.Post, autthorId int) map[string]string
-	GetPostsFromTeams(user models.User) ([]models.Post, error)
-	GetPostsFromUsers(user models.User) ([]models.Post, error)
-	GetAllPosts(user models.User) ([]models.Post, error)
+	//GetPostsFromTeams(user models.User) ([]models.Post, error)
+	GetPostsFromUsers(user models.User) ([]models.UserPost, error)
+	//GetAllPosts(user models.User) ([]models.Post, error)
 	GetTeams(user models.User) ([]models.Team, error)
 	CreateTeam(team models.Team, user models.User) map[string]string
 }

@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `following`(
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `post` (
+CREATE TABLE IF NOT EXISTS `user_post` (
 -- mandatory columns
     `id` INT NOT NULL AUTO_INCREMENT,
     `content` TEXT NOT NULL,
@@ -55,23 +55,22 @@ CREATE TABLE IF NOT EXISTS `post` (
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `author_type` ENUM('user', 'team') NOT NULL,
     `is_public` TINYINT(1) NOT NULL DEFAULT 1,
-    PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS `user_post` (
-    `id` INT NOT NULL AUTO_INCREMENT,
     `user_id` INT NOT NULL,
-    `post_id` INT NOT NULL,
-    PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`post_id`) REFERENCES `post`(`id`) ON DELETE CASCADE
+    PRIMARY KEY (`id`)
+
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `team_post` (
+-- mandatory columns
     `id` INT NOT NULL AUTO_INCREMENT,
+    `content` TEXT NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `author_type` ENUM('user', 'team') NOT NULL,
+    `is_public` TINYINT(1) NOT NULL DEFAULT 1,
     `team_id` INT NOT NULL,
-    `post_id` INT NOT NULL,
-    PRIMARY KEY (`id`),
     FOREIGN KEY (`team_id`) REFERENCES `team`(`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`post_id`) REFERENCES `post`(`id`) ON DELETE CASCADE
+    PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

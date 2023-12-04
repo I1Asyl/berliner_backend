@@ -74,45 +74,44 @@ func (a ApiService) CreateTeam(team models.Team, user models.User) map[string]st
 func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string {
 	post.CreatedAt = time.Now()
 	post.UpdatedAt = time.Now()
-	invalid := post.IsValid()
-	if len(invalid) == 0 {
-		id, err := a.repo.SqlQueries.AddPost(post)
+	invalid := make(map[string]string)
 
-		if err != nil {
-			invalid["common"] = err.Error()
+	invalid = post.IsValid()
+	if len(invalid) == 0 {
+		if post.AuthorType == "user" {
+			post := models.UserPost{UserId: authorId, Post: post}
+			err := a.repo.SqlQueries.AddUserPost(post)
+			invalid["err"] = err.Error()
 		} else {
-			if post.AuthorType == "user" {
-				post := models.UserPost{UserId: authorId, PostId: id}
-				a.repo.SqlQueries.AddUserPost(post)
-			} else {
-				post := models.TeamPost{TeamId: authorId, PostId: id}
-				a.repo.SqlQueries.AddTeamPost(post)
-			}
+			post := models.TeamPost{TeamId: authorId, Post: post}
+			err := a.repo.SqlQueries.AddTeamPost(post)
+			invalid["err"] = err.Error()
 		}
+
 	}
 	return invalid
 }
 
 // get all user's team posts from the database
-func (a ApiService) GetPostsFromTeams(user models.User) ([]models.Post, error) {
-	posts, err := a.repo.SqlQueries.GetTeamPosts(user)
-	return posts, err
-}
+// func (a ApiService) GetPostsFromTeams(user models.User) ([]models.Post, error) {
+// 	posts, err := a.repo.SqlQueries.GetTeamPosts(user)
+// 	return posts, err
+// }
 
 // get all user's following's posts from the database
-func (a ApiService) GetPostsFromUsers(user models.User) ([]models.Post, error) {
+func (a ApiService) GetPostsFromUsers(user models.User) ([]models.UserPost, error) {
 	posts, err := a.repo.SqlQueries.GetUserPosts(user)
 	return posts, err
 }
 
 // get all posts available for the given user from the database
-func (a ApiService) GetAllPosts(user models.User) ([]models.Post, error) {
-	teamPosts, _ := a.GetPostsFromTeams(user)
-	userPosts, _ := a.GetPostsFromUsers(user)
-	posts := teamPosts
-	posts = append(posts, userPosts...)
-	return posts, nil
-}
+// func (a ApiService) GetAllPosts(user models.User) ([]models.Post, error) {
+// 	teamPosts, _ := a.GetPostsFromTeams(user)
+// 	userPosts, _ := a.GetPostsFromUsers(user)
+// 	posts := teamPosts
+// 	posts = append(posts, userPosts...)
+// 	return posts, nil
+// }
 
 func (a ApiService) GetFollowing(user models.User) ([]models.User, error) {
 	users, err := a.repo.SqlQueries.GetFollowing(user)
