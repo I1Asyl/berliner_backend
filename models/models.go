@@ -66,7 +66,7 @@ type UserPost struct {
 
 type TeamPost struct {
 	Post
-	TeamId int `json:"postId" db:"post_id"`
+	TeamId int `json:"teamId" db:"team_id"`
 }
 
 type Following struct {

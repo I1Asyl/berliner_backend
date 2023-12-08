@@ -95,11 +95,13 @@ func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string
 	return invalid
 }
 
-// get all user's team posts from the database
-// func (a ApiService) GetPostsFromTeams(user models.User) ([]models.Post, error) {
-// 	posts, err := a.repo.SqlQueries.GetTeamPosts(user)
-// 	return posts, err
-// }
+func (a ApiService) GetPostsFromTeams(user models.User) ([]struct {
+	models.Team
+	models.TeamPost
+}, error) {
+	posts, err := a.repo.SqlQueries.GetTeamPosts(user)
+	return posts, err
+}
 
 // get all user's following's posts from the database
 func (a ApiService) GetPostsFromUsers(user models.User) ([]struct {

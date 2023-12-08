@@ -104,12 +104,12 @@ func (db Transaction) AddTeam(team models.Team) error {
 
 func (db Database) AddUserPost(post models.UserPost) error {
 	_, err := db.Exec("INSERT INTO user_post (author_type, content, updated_at, created_at, user_id) VALUES (?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.UserId)
-	fmt.Println(err)
 	return err
 }
 
 func (db Database) AddTeamPost(post models.TeamPost) error {
 	_, err := db.Exec("INSERT INTO team_post (author_type, content, updated_at, created_at, team_id) VALUES (?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.TeamId)
+	fmt.Println(post.TeamId)
 	return err
 }
 
@@ -123,18 +123,26 @@ func (db Database) GetUserPosts(user models.User) ([]struct {
 		models.User
 		models.UserPost
 	}
+
 	err := db.Select(&newTable, fmt.Sprintf("SELECT user_post.*, user.username, user.first_name, user.last_name FROM user_post LEFT JOIN user on user_post.user_id = user.id WHERE user_post.user_id in (%v) OR user_post.user_id = ? ORDER BY updated_at DESC", users), user.Id, user.Id)
 	return newTable, err
-	//err = db.Select(&posts, fmt.Sprintf("SELECT * FROM user_post WHERE user_id in (%v) OR user_id = ?", users), user.Id, user.Id)
 
 }
 
-// func (db Database) GetTeamPosts(user models.User) ([]models.Post, error) {
-// 	var posts []models.Post
-// 	teams := "SELECT membership.team_id FROM membership WHERE membership.user_id=?"
-// 	err := db.Select(&posts, fmt.Sprintf("SELECT post.* FROM post LEFT JOIN team_post ON team_post.post_id = post.id WHERE team_post.team_id in (%v)", teams), user.Id)
-// 	return posts, err
-// }
+func (db Database) GetTeamPosts(user models.User) ([]struct {
+	models.Team
+	models.TeamPost
+}, error) {
+	//var posts []models.UserPost
+	teams := "SELECT membership.team_id FROM membership WHERE membership.user_id=?"
+	var newTable []struct {
+		models.Team
+		models.TeamPost
+	}
+	err := db.Select(&newTable, fmt.Sprintf("SELECT team_post.*, team.team_name FROM team_post LEFT JOIN team on team_post.team_id = team.id WHERE team_post.team_id in (%v) ORDER BY updated_at DESC", teams), user.Id)
+	return newTable, err
+
+}
 
 func (db Database) GetFollowing(user models.User) ([]models.User, error) {
 	var users []models.User

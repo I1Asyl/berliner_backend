@@ -77,15 +77,12 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	authorType := ctx.DefaultQuery("author", "")
 	user := res.(models.User)
-	var ans []struct {
-		models.User
-		models.UserPost
-	}
+	var ans interface{}
 	var err error
 
 	// check if needed post should be written by team, user or all
 	if authorType == "team" {
-		//ans, err = h.services.Api.GetPostsFromTeams(user)
+		ans, err = h.services.Api.GetPostsFromTeams(user)
 	} else if authorType == "user" {
 		ans, err = h.services.Api.GetPostsFromUsers(user)
 	} else {
@@ -95,7 +92,6 @@ func (h Handler) getPosts(ctx *gin.Context) {
 		ctx.AbortWithError(400, err)
 		return
 	}
-
 	ctx.JSON(200, ans)
 }
 

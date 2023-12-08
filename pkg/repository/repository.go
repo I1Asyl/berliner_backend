@@ -16,7 +16,10 @@ type SqlQueries interface {
 	AddTeamPost(post models.TeamPost) error
 	AddFollowing(following models.Following) error
 	StartTransaction() Transaction
-	//GetTeamPosts(user models.User) ([]models.Post, error)
+	GetTeamPosts(user models.User) ([]struct {
+		models.Team
+		models.TeamPost
+	}, error)
 	GetUserPosts(user models.User) ([]struct {
 		models.User
 		models.UserPost
