@@ -103,12 +103,12 @@ func (db Transaction) AddTeam(team models.Team) error {
 }
 
 func (db Database) AddUserPost(post models.UserPost) error {
-	_, err := db.Exec("INSERT INTO user_post (author_type, content, updated_at, created_at, user_id) VALUES (?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.UserId)
+	_, err := db.Exec("INSERT INTO user_post (author_type, content, updated_at, created_at, user_id, is_public) VALUES (?, ?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.UserId, post.IsPublic)
 	return err
 }
 
 func (db Database) AddTeamPost(post models.TeamPost) error {
-	_, err := db.Exec("INSERT INTO team_post (author_type, content, updated_at, created_at, team_id) VALUES (?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.TeamId)
+	_, err := db.Exec("INSERT INTO team_post (author_type, content, updated_at, created_at, team_id, is_public) VALUES (?, ?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.TeamId, post.IsPublic)
 	fmt.Println(post.TeamId)
 	return err
 }

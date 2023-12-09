@@ -61,7 +61,6 @@ func (h Handler) createPost(ctx *gin.Context) {
 		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the post model"))
 		return
 	}
-
 	if invalid := h.services.Api.CreatePost(post, id); len(invalid) > 0 {
 		if err, ok := invalid["error"]; ok {
 			ctx.AbortWithError(500, errors.New(err))

@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `user_post` (
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `author_type` ENUM('user', 'team') NOT NULL,
-    `is_public` TINYINT(1) NOT NULL DEFAULT 1,
+    `is_public` BOOLEAN NOT NULL,
     `user_id` INT NOT NULL,
     FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
     PRIMARY KEY (`id`)
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `team_post` (
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `author_type` ENUM('user', 'team') NOT NULL,
-    `is_public` TINYINT(1) NOT NULL DEFAULT 1,
+    `is_public` BOOLEAN NOT NULL,
     `team_id` INT NOT NULL,
     FOREIGN KEY (`team_id`) REFERENCES `team`(`id`) ON DELETE CASCADE,
     PRIMARY KEY (`id`)
