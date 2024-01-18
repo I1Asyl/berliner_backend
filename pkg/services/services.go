@@ -34,6 +34,14 @@ type Api interface {
 		models.User
 		models.UserPost
 	}, error)
+	GetNewPostsFromUsers(user models.User) ([]struct {
+		models.User
+		models.UserPost
+	}, error)
+	GetNewPostsFromTeams(user models.User) ([]struct {
+		models.Team
+		models.TeamPost
+	}, error)
 	//GetAllPosts(user models.User) ([]models.Post, error)
 	GetTeams(user models.User) ([]models.Team, error)
 	CreateTeam(team models.Team, user models.User) map[string]string

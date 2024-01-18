@@ -85,7 +85,29 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	} else if authorType == "user" {
 		ans, err = h.services.Api.GetPostsFromUsers(user)
 	} else {
-		//ans, err = h.services.Api.GetAllPosts(user)
+		ctx.AbortWithError(400, errors.New("author type is not specified."))
+	}
+	if err != nil {
+		ctx.AbortWithError(400, err)
+		return
+	}
+	ctx.JSON(200, ans)
+}
+
+func (h Handler) getNewPosts(ctx *gin.Context) {
+	res, _ := ctx.Get("user")
+	authorType := ctx.DefaultQuery("author", "")
+	user := res.(models.User)
+	var ans interface{}
+	var err error
+
+	// check if needed post should be written by team, user or all
+	if authorType == "team" {
+		ans, err = h.services.Api.GetNewPostsFromTeams(user)
+	} else if authorType == "user" {
+		ans, err = h.services.Api.GetNewPostsFromUsers(user)
+	} else {
+		ctx.AbortWithError(400, errors.New("author type is not specified."))
 	}
 	if err != nil {
 		ctx.AbortWithError(400, err)

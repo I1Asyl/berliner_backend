@@ -144,6 +144,36 @@ func (db Database) GetTeamPosts(user models.User) ([]struct {
 
 }
 
+func (db Database) GetNewUserPosts(user models.User) ([]struct {
+	models.User
+	models.UserPost
+}, error) {
+	//var posts []models.UserPost
+	users := "SELECT following.user_id FROM following WHERE following.follower_id=?"
+	var newTable []struct {
+		models.User
+		models.UserPost
+	}
+
+	err := db.Select(&newTable, fmt.Sprintf("SELECT user_post.*, user.username, user.first_name, user.last_name FROM user_post LEFT JOIN user on user_post.user_id = user.id WHERE user_post.user_id NOT in (%v) AND NOT user_post.user_id = ? AND user_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id, user.Id)
+	return newTable, err
+}
+
+func (db Database) GetNewTeamPosts(user models.User) ([]struct {
+	models.Team
+	models.TeamPost
+}, error) {
+	//var posts []models.UserPost
+	users := "SELECT membership.team_id FROM membership WHERE membership.user_id=?"
+	var newTable []struct {
+		models.Team
+		models.TeamPost
+	}
+
+	err := db.Select(&newTable, fmt.Sprintf("SELECT team_post.*, team.team_name FROM team_post LEFT JOIN team on team_post.team_id = team.id WHERE team_post.team_id NOT in (%v) AND team_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id, user.Id)
+	return newTable, err
+}
+
 func (db Database) GetFollowing(user models.User) ([]models.User, error) {
 	var users []models.User
 	err := db.Select(&users, "SELECT * FROM following WHERE follower_id = ?", user.Id)

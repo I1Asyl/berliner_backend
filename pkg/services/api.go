@@ -103,12 +103,28 @@ func (a ApiService) GetPostsFromTeams(user models.User) ([]struct {
 	return posts, err
 }
 
+func (a ApiService) GetNewPostsFromTeams(user models.User) ([]struct {
+	models.Team
+	models.TeamPost
+}, error) {
+	posts, err := a.repo.SqlQueries.GetNewTeamPosts(user)
+	return posts, err
+}
+
 // get all user's following's posts from the database
 func (a ApiService) GetPostsFromUsers(user models.User) ([]struct {
 	models.User
 	models.UserPost
 }, error) {
 	posts, err := a.repo.SqlQueries.GetUserPosts(user)
+	return posts, err
+}
+
+func (a ApiService) GetNewPostsFromUsers(user models.User) ([]struct {
+	models.User
+	models.UserPost
+}, error) {
+	posts, err := a.repo.SqlQueries.GetNewUserPosts(user)
 	return posts, err
 }
 

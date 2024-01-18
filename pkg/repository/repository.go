@@ -24,6 +24,14 @@ type SqlQueries interface {
 		models.User
 		models.UserPost
 	}, error)
+	GetNewUserPosts(user models.User) ([]struct {
+		models.User
+		models.UserPost
+	}, error)
+	GetNewTeamPosts(user models.User) ([]struct {
+		models.Team
+		models.TeamPost
+	}, error)
 	GetFollowing(user models.User) ([]models.User, error)
 	UpdateTeam(team models.Team) error
 	DeleteTeam(team models.Team) error
