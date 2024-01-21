@@ -111,6 +111,22 @@ func (a ApiService) GetNewPostsFromTeams(user models.User) ([]struct {
 	return posts, err
 }
 
+func (a ApiService) FollowTeam(user models.User, teamName string) error {
+	team, err := a.GetTeamByTeamName(teamName)
+	if err != nil {
+		return err
+	}
+	return a.repo.FollowTeam(user, team)
+}
+
+func (a ApiService) FollowUser(follower models.User, userName string) error {
+	user, err := a.GetUserByUsername(userName)
+	if err != nil {
+		return err
+	}
+	return a.repo.FollowUser(follower, user)
+}
+
 // get all user's following's posts from the database
 func (a ApiService) GetPostsFromUsers(user models.User) ([]struct {
 	models.User

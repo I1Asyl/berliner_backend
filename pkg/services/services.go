@@ -20,6 +20,8 @@ type Authorization interface {
 
 // all api services
 type Api interface {
+	FollowTeam(user models.User, teamName string) error
+	FollowUser(follower models.User, userName string) error
 	DeleteTeam(team models.Team) error
 	UpdateTeam(team models.Team) error
 	GetFollowing(user models.User) ([]models.User, error)

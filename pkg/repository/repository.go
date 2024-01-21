@@ -6,6 +6,8 @@ import (
 )
 
 type SqlQueries interface {
+	FollowTeam(user models.User, team models.Team) error
+	FollowUser(follower models.User, user models.User) error
 	GetTeamByTeamName(teamName string) (models.Team, error)
 	GetUserByUserame(teamName string) (models.User, error)
 	GetUserTeams(user models.User) ([]models.Team, error)

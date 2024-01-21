@@ -94,6 +94,8 @@ func (h *Handler) InitRouter() *gin.Engine {
 		private.POST("/post", h.createPost)
 		private.GET("/post", h.getPosts)
 
+		private.POST("/follow", h.follow)
+
 		private.GET("/newPost", h.getNewPosts)
 
 		private.GET("/following", h.getFollowing)

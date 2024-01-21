@@ -94,6 +94,24 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
+func (h Handler) follow(ctx *gin.Context) {
+	res, _ := ctx.Get("user")
+	followType := ctx.DefaultQuery("follow", "")
+	user := res.(models.User)
+	followed := ctx.Query("followed")
+	var err error
+	if followType == "team" {
+		err = h.services.FollowTeam(user, followed)
+	} else if followType == "user" {
+		err = h.services.FollowUser(user, followed)
+	}
+	if err != nil {
+		ctx.AbortWithError(400, err)
+	} else {
+		ctx.JSON(200, "success")
+	}
+}
+
 func (h Handler) getNewPosts(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	authorType := ctx.DefaultQuery("author", "")

@@ -170,8 +170,19 @@ func (db Database) GetNewTeamPosts(user models.User) ([]struct {
 		models.TeamPost
 	}
 
-	err := db.Select(&newTable, fmt.Sprintf("SELECT team_post.*, team.team_name FROM team_post LEFT JOIN team on team_post.team_id = team.id WHERE team_post.team_id NOT in (%v) AND team_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id, user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT team_post.*, team.team_name FROM team_post LEFT JOIN team on team_post.team_id = team.id WHERE team_post.team_id NOT in (%v) AND team_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id)
 	return newTable, err
+}
+
+func (db Database) FollowTeam(user models.User, team models.Team) error {
+	query := "INSERT INTO membership (team_id, user_id, is_editor) VALUES (?, ?, ?)"
+	_, err := db.Exec(query, team.Id, user.Id, 0)
+	return err
+}
+func (db Database) FollowUser(follower models.User, user models.User) error {
+	query := "INSERT INTO following (user_id, follower_id) VALUES (?, ?)"
+	_, err := db.Exec(query, user.Id, follower.Id)
+	return err
 }
 
 func (db Database) GetFollowing(user models.User) ([]models.User, error) {
