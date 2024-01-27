@@ -8,32 +8,32 @@ CREATE TABLE IF NOT EXISTS `user` (
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `team`(
+CREATE TABLE IF NOT EXISTS `pseudonym`(
   `id` INT NOT NULL AUTO_INCREMENT,
-  `team_name` VARCHAR(255) UNIQUE NOT NULL,
-  `team_leader_id` INT DEFAULT NULL,
-  `team_description` TEXT NOT NULL,
+  `pseudonym_name` VARCHAR(255) UNIQUE NOT NULL,
+  `pseudonym_leader_id` INT DEFAULT NULL,
+  `pseudonym_description` TEXT NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`team_leader_id`) REFERENCES `user`(`id`) ON DELETE SET DEFAULT
+    FOREIGN KEY (`pseudonym_leader_id`) REFERENCES `user`(`id`) ON DELETE SET DEFAULT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `membership`(
     `id` INT NOT NULL AUTO_INCREMENT,
-    `team_id` INT NOT NULL,
+    `pseudonym_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `is_editor` TINYINT(1) NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`team_id`) REFERENCES `team`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`pseudonym_id`) REFERENCES `pseudonym`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `request`(
     `id` INT NOT NULL AUTO_INCREMENT,
-    `team_id` INT NOT NULL,
+    `pseudonym_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `is_accepted` TINYINT(1) NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`team_id`) REFERENCES `team`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`pseudonym_id`) REFERENCES `pseudonym`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `user_post` (
     `content` TEXT NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `author_type` ENUM('user', 'team') NOT NULL,
+    `author_type` ENUM('user', 'pseudonym') NOT NULL,
     `is_public` BOOLEAN NOT NULL,
     `user_id` INT NOT NULL,
     FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
@@ -61,16 +61,16 @@ CREATE TABLE IF NOT EXISTS `user_post` (
 
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `team_post` (
+CREATE TABLE IF NOT EXISTS `pseudonym_post` (
 -- mandatory columns
     `id` INT NOT NULL AUTO_INCREMENT,
     `content` TEXT NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `author_type` ENUM('user', 'team') NOT NULL,
+    `author_type` ENUM('user', 'pseudonym') NOT NULL,
     `is_public` BOOLEAN NOT NULL,
-    `team_id` INT NOT NULL,
-    FOREIGN KEY (`team_id`) REFERENCES `team`(`id`) ON DELETE CASCADE,
+    `pseudonym_id` INT NOT NULL,
+    FOREIGN KEY (`pseudonym_id`) REFERENCES `pseudonym`(`id`) ON DELETE CASCADE,
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

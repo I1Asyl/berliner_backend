@@ -20,17 +20,17 @@ type Authorization interface {
 
 // all api services
 type Api interface {
-	FollowTeam(user models.User, teamName string) error
+	FollowPseudonym(user models.User, pseudonymName string) error
 	FollowUser(follower models.User, userName string) error
-	DeleteTeam(team models.Team) error
-	UpdateTeam(team models.Team) error
+	DeletePseudonym(pseudonym models.Pseudonym) error
+	UpdatePseudonym(pseudonym models.Pseudonym) error
 	GetFollowing(user models.User) ([]models.User, error)
 	GetUserByUsername(username string) (models.User, error)
-	GetTeamByTeamName(teamName string) (models.Team, error)
+	GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error)
 	CreatePost(post models.Post, autthorId int) map[string]string
-	GetPostsFromTeams(user models.User) ([]struct {
-		models.Team
-		models.TeamPost
+	GetPostsFromPseudonyms(user models.User) ([]struct {
+		models.Pseudonym
+		models.PseudonymPost
 	}, error)
 	GetPostsFromUsers(user models.User) ([]struct {
 		models.User
@@ -40,13 +40,13 @@ type Api interface {
 		models.User
 		models.UserPost
 	}, error)
-	GetNewPostsFromTeams(user models.User) ([]struct {
-		models.Team
-		models.TeamPost
+	GetNewPostsFromPseudonyms(user models.User) ([]struct {
+		models.Pseudonym
+		models.PseudonymPost
 	}, error)
 	//GetAllPosts(user models.User) ([]models.Post, error)
-	GetTeams(user models.User) ([]models.Team, error)
-	CreateTeam(team models.Team, user models.User) map[string]string
+	GetPseudonyms(user models.User) ([]models.Pseudonym, error)
+	CreatePseudonym(pseudonym models.Pseudonym, user models.User) map[string]string
 }
 
 // func clearAllData() {

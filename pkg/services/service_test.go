@@ -285,33 +285,33 @@ func TestHashPassword(t *testing.T) {
 	}
 }
 
-func TestCreateTeam(t *testing.T) {
+func TestCreatePseudonym(t *testing.T) {
 	testTable := []struct {
 		name       string
-		team       models.Team
-		teamLeader models.User
+		pseudonym       models.Pseudonym
+		pseudonymLeader models.User
 		expected   map[string]string
 	}{
 		{
 			name: "success",
-			team: models.Team{
-				TeamName:        "Team",
-				TeamLeaderId:    1,
-				TeamDescription: "hoho",
+			pseudonym: models.Pseudonym{
+				PseudonymName:        "Pseudonym",
+				PseudonymLeaderId:    1,
+				PseudonymDescription: "hoho",
 			},
-			teamLeader: testUser,
+			pseudonymLeader: testUser,
 			expected:   map[string]string{},
 		},
 		{
 			name: "error",
-			team: models.Team{
-				TeamName:        "Team",
-				TeamLeaderId:    1,
-				TeamDescription: "",
+			pseudonym: models.Pseudonym{
+				PseudonymName:        "Pseudonym",
+				PseudonymLeaderId:    1,
+				PseudonymDescription: "",
 			},
-			teamLeader: testUser,
+			pseudonymLeader: testUser,
 			expected: map[string]string{
-				"teamDescription": "Team description can not be empty",
+				"pseudonymDescription": "Pseudonym description can not be empty",
 			},
 		},
 	}
@@ -323,7 +323,7 @@ func TestCreateTeam(t *testing.T) {
 				t.Errorf("Migration problems %s ", err)
 			}
 			services.AddUser(testUser)
-			err := services.CreateTeam(testCase.team, testUser)
+			err := services.CreatePseudonym(testCase.pseudonym, testUser)
 			if !reflect.DeepEqual(err, testCase.expected) {
 				t.Errorf("Expected %v, got %v", testCase.expected, err)
 			}
@@ -336,27 +336,27 @@ func TestCreateTeam(t *testing.T) {
 
 }
 
-// gets Team model by its name in the transaction
-func TestGetTeamByTeamName(t *testing.T) {
+// gets Pseudonym model by its name in the transaction
+func TestGetPseudonymByPseudonymName(t *testing.T) {
 	testTable := []struct {
 		name     string
-		teamName string
-		expected models.Team
+		pseudonymName string
+		expected models.Pseudonym
 	}{
 		{
 			name:     "success",
-			teamName: "Team",
-			expected: models.Team{
-				TeamName:        "Team",
-				TeamLeaderId:    1,
-				TeamDescription: "hoho",
+			pseudonymName: "Pseudonym",
+			expected: models.Pseudonym{
+				PseudonymName:        "Pseudonym",
+				PseudonymLeaderId:    1,
+				PseudonymDescription: "hoho",
 				Id:              1,
 			},
 		},
 		{
 			name:     "error1",
-			teamName: "213",
-			expected: models.Team{},
+			pseudonymName: "213",
+			expected: models.Pseudonym{},
 		},
 	}
 
@@ -364,15 +364,15 @@ func TestGetTeamByTeamName(t *testing.T) {
 		t.Errorf("Migration problems %s ", err)
 	}
 	services.AddUser(testUser)
-	services.CreateTeam(models.Team{
-		TeamName:        "Team",
-		TeamLeaderId:    1,
-		TeamDescription: "hoho",
+	services.CreatePseudonym(models.Pseudonym{
+		PseudonymName:        "Pseudonym",
+		PseudonymLeaderId:    1,
+		PseudonymDescription: "hoho",
 	}, testUser)
 	for _, testCase := range testTable {
-		team, _ := services.GetTeamByTeamName(testCase.teamName)
-		if !reflect.DeepEqual(team, testCase.expected) {
-			t.Errorf("Expected %v, got %v", testCase.expected, team)
+		pseudonym, _ := services.GetPseudonymByPseudonymName(testCase.pseudonymName)
+		if !reflect.DeepEqual(pseudonym, testCase.expected) {
+			t.Errorf("Expected %v, got %v", testCase.expected, pseudonym)
 		}
 	}
 	if err := repo.Migration.Down(); err != nil {
@@ -417,19 +417,19 @@ func TestGetUserByUsername(t *testing.T) {
 	}
 }
 
-// // create a new team in the database for the given user
-// func (a ApiService) CreateTeam(team models.Team, user models.User) map[string]string {
+// // create a new pseudonym in the database for the given user
+// func (a ApiService) CreatePseudonym(pseudonym models.Pseudonym, user models.User) map[string]string {
 
-// 	invalid := team.IsValid()
-// 	team.TeamLeaderId = user.Id
+// 	invalid := pseudonym.IsValid()
+// 	pseudonym.PseudonymLeaderId = user.Id
 // 	tx := a.repo.SqlQueries.StartTransaction()
 
 // 	if len(invalid) == 0 {
-// 		if err := tx.AddTeam(team); err != nil {
+// 		if err := tx.AddPseudonym(pseudonym); err != nil {
 // 			invalid["common"] = err.Error()
 // 		} else {
-// 			team, _ = tx.GetTeamByTeamName(team.TeamName)
-// 			membership := models.Membership{UserId: team.TeamLeaderId, TeamId: team.Id, IsEditor: true}
+// 			pseudonym, _ = tx.GetPseudonymByPseudonymName(pseudonym.PseudonymName)
+// 			membership := models.Membership{UserId: pseudonym.PseudonymLeaderId, PseudonymId: pseudonym.Id, IsEditor: true}
 // 			tx.AddMembership(membership)
 
 // 		}
@@ -442,7 +442,7 @@ func TestGetUserByUsername(t *testing.T) {
 // 	return invalid
 // }
 
-// // create a new post in the database for the given user or team
+// // create a new post in the database for the given user or pseudonym
 // func (a ApiService) CreatePost(post models.Post) map[string]string {
 
 // 	invalid := post.IsValid()
@@ -457,9 +457,9 @@ func TestGetUserByUsername(t *testing.T) {
 // 	return invalid
 // }
 
-// // get all user's team posts from the database
-// func (a ApiService) GetPostsFromTeams(user models.User) ([]models.Post, error) {
-// 	posts, err := a.repo.SqlQueries.GetTeamPosts(user)
+// // get all user's pseudonym posts from the database
+// func (a ApiService) GetPostsFromPseudonyms(user models.User) ([]models.Post, error) {
+// 	posts, err := a.repo.SqlQueries.GetPseudonymPosts(user)
 // 	return posts, err
 // }
 
@@ -471,9 +471,9 @@ func TestGetUserByUsername(t *testing.T) {
 
 // // get all posts available for the given user from the database
 // func (a ApiService) GetAllPosts(user models.User) ([]models.Post, error) {
-// 	teamPosts, _ := a.GetPostsFromTeams(user)
+// 	pseudonymPosts, _ := a.GetPostsFromPseudonyms(user)
 // 	userPosts, _ := a.GetPostsFromUsers(user)
-// 	posts := teamPosts
+// 	posts := pseudonymPosts
 // 	posts = append(posts, userPosts...)
 // 	return posts, nil
 // }
@@ -483,12 +483,12 @@ func TestGetUserByUsername(t *testing.T) {
 // 	return users, err
 // }
 
-// func (a ApiService) DeleteTeam(team models.Team) error {
-// 	err := a.repo.SqlQueries.DeleteTeam(team)
+// func (a ApiService) DeletePseudonym(pseudonym models.Pseudonym) error {
+// 	err := a.repo.SqlQueries.DeletePseudonym(pseudonym)
 // 	return err
 // }
 
-// func (a ApiService) UpdateTeam(team models.Team) error {
-// 	err := a.repo.SqlQueries.UpdateTeam(team)
+// func (a ApiService) UpdatePseudonym(pseudonym models.Pseudonym) error {
+// 	err := a.repo.SqlQueries.UpdatePseudonym(pseudonym)
 // 	return err
 // }

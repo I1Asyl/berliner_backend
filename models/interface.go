@@ -32,14 +32,14 @@ func (user User) IsValid() map[string]string {
 	return validMap
 }
 
-func (team Team) IsValid() map[string]string {
+func (pseudonym Pseudonym) IsValid() map[string]string {
 	validMap := make(map[string]string)
 
-	if !validName(team.TeamName) {
-		validMap["teamName"] = "Invalid team name"
+	if !validName(pseudonym.PseudonymName) {
+		validMap["pseudonymName"] = "Invalid pseudonym name"
 	}
-	if team.TeamDescription == "" {
-		validMap["teamDescription"] = "Team description can not be empty"
+	if pseudonym.PseudonymDescription == "" {
+		validMap["pseudonymDescription"] = "Pseudonym description can not be empty"
 	}
 	return validMap
 }
@@ -62,11 +62,11 @@ func (post UserPost) IsValid() map[string]string {
 	return validMap
 }
 
-func (post TeamPost) IsValid() map[string]string {
+func (post PseudonymPost) IsValid() map[string]string {
 	validMap := make(map[string]string)
 
-	if post.TeamId == 0 {
-		validMap["teamAuthorId"] = "Invalid team author id"
+	if post.PseudonymId == 0 {
+		validMap["pseudonymAuthorId"] = "Invalid pseudonym author id"
 	}
 	return validMap
 }

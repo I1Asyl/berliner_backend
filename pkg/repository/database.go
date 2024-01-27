@@ -41,16 +41,16 @@ func (db Database) StartTransaction() Transaction {
 // 	tx.Commit()
 // }
 
-func (db Database) GetTeamByTeamName(teamName string) (models.Team, error) {
-	var team models.Team
-	err := db.Get(&team, "SELECT * FROM team WHERE team_name = ?", teamName)
-	return team, err
+func (db Database) GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error) {
+	var pseudonym models.Pseudonym
+	err := db.Get(&pseudonym, "SELECT * FROM pseudonym WHERE pseudonym_name = ?", pseudonymName)
+	return pseudonym, err
 }
 
-func (db Transaction) GetTeamByTeamName(teamName string) (models.Team, error) {
-	var team models.Team
-	err := db.Get(&team, "SELECT * FROM team WHERE team_name = ?", teamName)
-	return team, err
+func (db Transaction) GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error) {
+	var pseudonym models.Pseudonym
+	err := db.Get(&pseudonym, "SELECT * FROM pseudonym WHERE pseudonym_name = ?", pseudonymName)
+	return pseudonym, err
 }
 
 func (db Database) GetUserByUserame(username string) (models.User, error) {
@@ -64,15 +64,15 @@ func (db Transaction) GetUserByUserame(username string) (models.User, error) {
 	return user, err
 }
 
-func (db Database) GetUserTeams(user models.User) ([]models.Team, error) {
-	var teams []models.Team
-	err := db.Select(&teams, "SELECT * FROM team WHERE team_leader_id = ?", user.Id)
-	return teams, err
+func (db Database) GetUserPseudonyms(user models.User) ([]models.Pseudonym, error) {
+	var pseudonyms []models.Pseudonym
+	err := db.Select(&pseudonyms, "SELECT * FROM pseudonym WHERE pseudonym_leader_id = ?", user.Id)
+	return pseudonyms, err
 }
-func (db Transaction) GetUserTeams(user models.User) ([]models.Team, error) {
-	var teams []models.Team
-	err := db.Select(&teams, "SELECT * FROM team WHERE team_leader_id = ?", user.Id)
-	return teams, err
+func (db Transaction) GetUserPseudonyms(user models.User) ([]models.Pseudonym, error) {
+	var pseudonyms []models.Pseudonym
+	err := db.Select(&pseudonyms, "SELECT * FROM pseudonym WHERE pseudonym_leader_id = ?", user.Id)
+	return pseudonyms, err
 }
 
 func (db Database) AddUser(user models.User) error {
@@ -85,20 +85,20 @@ func (db Transaction) AddUser(user models.User) error {
 }
 
 func (db Database) AddMembership(membership models.Membership) error {
-	_, err := db.Exec("INSERT INTO membership (team_id, user_id, is_editor) VALUES (?, ?, ?)", membership.TeamId, membership.UserId, membership.IsEditor)
+	_, err := db.Exec("INSERT INTO membership (pseudonym_id, user_id, is_editor) VALUES (?, ?, ?)", membership.PseudonymId, membership.UserId, membership.IsEditor)
 	return err
 }
 func (db Transaction) AddMembership(membership models.Membership) error {
-	_, err := db.Exec("INSERT INTO membership (team_id, user_id, is_editor) VALUES (?, ?, ?)", membership.TeamId, membership.UserId, membership.IsEditor)
+	_, err := db.Exec("INSERT INTO membership (pseudonym_id, user_id, is_editor) VALUES (?, ?, ?)", membership.PseudonymId, membership.UserId, membership.IsEditor)
 	return err
 }
 
-func (db Database) AddTeam(team models.Team) error {
-	_, err := db.Exec("INSERT INTO team (team_name, team_leader_id, team_description) VALUES (?, ?, ?)", team.TeamName, team.TeamLeaderId, team.TeamDescription)
+func (db Database) AddPseudonym(pseudonym models.Pseudonym) error {
+	_, err := db.Exec("INSERT INTO pseudonym (pseudonym_name, pseudonym_leader_id, pseudonym_description) VALUES (?, ?, ?)", pseudonym.PseudonymName, pseudonym.PseudonymLeaderId, pseudonym.PseudonymDescription)
 	return err
 }
-func (db Transaction) AddTeam(team models.Team) error {
-	_, err := db.Exec("INSERT INTO team (team_name, team_leader_id, team_description) VALUES (?, ?, ?)", team.TeamName, team.TeamLeaderId, team.TeamDescription)
+func (db Transaction) AddPseudonym(pseudonym models.Pseudonym) error {
+	_, err := db.Exec("INSERT INTO pseudonym (pseudonym_name, pseudonym_leader_id, pseudonym_description) VALUES (?, ?, ?)", pseudonym.PseudonymName, pseudonym.PseudonymLeaderId, pseudonym.PseudonymDescription)
 	return err
 }
 
@@ -107,9 +107,9 @@ func (db Database) AddUserPost(post models.UserPost) error {
 	return err
 }
 
-func (db Database) AddTeamPost(post models.TeamPost) error {
-	_, err := db.Exec("INSERT INTO team_post (author_type, content, updated_at, created_at, team_id, is_public) VALUES (?, ?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.TeamId, post.IsPublic)
-	fmt.Println(post.TeamId)
+func (db Database) AddPseudonymPost(post models.PseudonymPost) error {
+	_, err := db.Exec("INSERT INTO pseudonym_post (author_type, content, updated_at, created_at, pseudonym_id, is_public) VALUES (?, ?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.PseudonymId, post.IsPublic)
+	fmt.Println(post.PseudonymId)
 	return err
 }
 
@@ -129,17 +129,17 @@ func (db Database) GetUserPosts(user models.User) ([]struct {
 
 }
 
-func (db Database) GetTeamPosts(user models.User) ([]struct {
-	models.Team
-	models.TeamPost
+func (db Database) GetPseudonymPosts(user models.User) ([]struct {
+	models.Pseudonym
+	models.PseudonymPost
 }, error) {
 	//var posts []models.UserPost
-	teams := "SELECT membership.team_id FROM membership WHERE membership.user_id=?"
+	pseudonyms := "SELECT membership.pseudonym_id FROM membership WHERE membership.user_id=?"
 	var newTable []struct {
-		models.Team
-		models.TeamPost
+		models.Pseudonym
+		models.PseudonymPost
 	}
-	err := db.Select(&newTable, fmt.Sprintf("SELECT team_post.*, team.team_name FROM team_post LEFT JOIN team on team_post.team_id = team.id WHERE team_post.team_id in (%v) ORDER BY updated_at DESC", teams), user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT pseudonym_post.*, pseudonym.pseudonym_name FROM pseudonym_post LEFT JOIN pseudonym on pseudonym_post.pseudonym_id = pseudonym.id WHERE pseudonym_post.pseudonym_id in (%v) ORDER BY updated_at DESC", pseudonyms), user.Id)
 	return newTable, err
 
 }
@@ -159,24 +159,24 @@ func (db Database) GetNewUserPosts(user models.User) ([]struct {
 	return newTable, err
 }
 
-func (db Database) GetNewTeamPosts(user models.User) ([]struct {
-	models.Team
-	models.TeamPost
+func (db Database) GetNewPseudonymPosts(user models.User) ([]struct {
+	models.Pseudonym
+	models.PseudonymPost
 }, error) {
 	//var posts []models.UserPost
-	users := "SELECT membership.team_id FROM membership WHERE membership.user_id=?"
+	users := "SELECT membership.pseudonym_id FROM membership WHERE membership.user_id=?"
 	var newTable []struct {
-		models.Team
-		models.TeamPost
+		models.Pseudonym
+		models.PseudonymPost
 	}
 
-	err := db.Select(&newTable, fmt.Sprintf("SELECT team_post.*, team.team_name FROM team_post LEFT JOIN team on team_post.team_id = team.id WHERE team_post.team_id NOT in (%v) AND team_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT pseudonym_post.*, pseudonym.pseudonym_name FROM pseudonym_post LEFT JOIN pseudonym on pseudonym_post.pseudonym_id = pseudonym.id WHERE pseudonym_post.pseudonym_id NOT in (%v) AND pseudonym_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id)
 	return newTable, err
 }
 
-func (db Database) FollowTeam(user models.User, team models.Team) error {
-	query := "INSERT INTO membership (team_id, user_id, is_editor) VALUES (?, ?, ?)"
-	_, err := db.Exec(query, team.Id, user.Id, 0)
+func (db Database) FollowPseudonym(user models.User, pseudonym models.Pseudonym) error {
+	query := "INSERT INTO membership (pseudonym_id, user_id, is_editor) VALUES (?, ?, ?)"
+	_, err := db.Exec(query, pseudonym.Id, user.Id, 0)
 	return err
 }
 func (db Database) FollowUser(follower models.User, user models.User) error {
@@ -191,8 +191,8 @@ func (db Database) GetFollowing(user models.User) ([]models.User, error) {
 	return users, err
 }
 
-func (db Database) DeleteTeam(team models.Team) error {
-	_, err := db.Exec("DELETE FROM team WHERE team_id = ?", team.Id)
+func (db Database) DeletePseudonym(pseudonym models.Pseudonym) error {
+	_, err := db.Exec("DELETE FROM pseudonym WHERE pseudonym_id = ?", pseudonym.Id)
 	return err
 }
 
@@ -201,15 +201,15 @@ func (db Database) AddFollowing(following models.Following) error {
 	return err
 }
 
-func (db Database) UpdateTeam(team models.Team) error {
-	if team.TeamName != "" {
-		_, err := db.Exec("UPDATE team SET team_name = ? WHERE team_id = ?", team.TeamName, team.Id)
+func (db Database) UpdatePseudonym(pseudonym models.Pseudonym) error {
+	if pseudonym.PseudonymName != "" {
+		_, err := db.Exec("UPDATE pseudonym SET pseudonym_name = ? WHERE pseudonym_id = ?", pseudonym.PseudonymName, pseudonym.Id)
 		if err != nil {
 			return err
 		}
 	}
-	if team.TeamDescription != "" {
-		_, err := db.Exec("UPDATE team SET team_description = ? WHERE team_id = ?", team.TeamName, team.Id)
+	if pseudonym.PseudonymDescription != "" {
+		_, err := db.Exec("UPDATE pseudonym SET pseudonym_description = ? WHERE pseudonym_id = ?", pseudonym.PseudonymName, pseudonym.Id)
 		if err != nil {
 			return err
 		}

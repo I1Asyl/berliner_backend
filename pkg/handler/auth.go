@@ -3,7 +3,7 @@ package handler
 import (
 	"errors"
 	"time"
-
+	"fmt"
 	"github.com/I1Asyl/ginBerliner/models"
 	"github.com/gin-gonic/gin"
 )
@@ -29,6 +29,7 @@ func (h *Handler) signUp(ctx *gin.Context) {
 			ctx.AbortWithError(500, errors.New(err))
 		}
 		ctx.AbortWithStatusJSON(422, invalid)
+		fmt.Println(invalid);
 		return
 	}
 	ctx.JSON(200, gin.H{})

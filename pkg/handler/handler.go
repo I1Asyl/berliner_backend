@@ -85,10 +85,10 @@ func (h *Handler) InitRouter() *gin.Engine {
 		private.Use(h.AuthMiddleware())
 		private.GET("", mainPage)
 
-		private.GET("/teams", h.getTeams)
-		private.POST("/teams", h.createTeam)
-		private.PATCH("/teams", h.updateTeam)
-		private.DELETE("/teams", h.deleteTeam)
+		private.GET("/pseudonyms", h.getPseudonyms)
+		private.POST("/pseudonyms", h.createPseudonym)
+		private.PATCH("/pseudonyms", h.updatePseudonym)
+		private.DELETE("/pseudonyms", h.deletePseudonym)
 
 		// post
 		private.POST("/post", h.createPost)

@@ -11,11 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// method for getting user teams
-func (h Handler) getTeams(ctx *gin.Context) {
+// method for getting user pseudonyms
+func (h Handler) getPseudonyms(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	user := res.(models.User)
-	ans, err := h.services.Api.GetTeams(user)
+	ans, err := h.services.Api.GetPseudonyms(user)
 
 	if err != nil {
 		ctx.JSON(400, gin.H{})
@@ -25,16 +25,16 @@ func (h Handler) getTeams(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
-// creating a team for an user
-func (h Handler) createTeam(ctx *gin.Context) {
-	var team models.Team
-	if err := ctx.BindJSON(&team); err != nil {
-		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the team model"))
+// creating a pseudonym for an user
+func (h Handler) createPseudonym(ctx *gin.Context) {
+	var pseudonym models.Pseudonym
+	if err := ctx.BindJSON(&pseudonym); err != nil {
+		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the pseudonym model"))
 		return
 	}
 	res, _ := ctx.Get("user")
 	user := res.(models.User)
-	if invalid := h.services.Api.CreateTeam(team, user); len(invalid) > 0 {
+	if invalid := h.services.Api.CreatePseudonym(pseudonym, user); len(invalid) > 0 {
 		if err, ok := invalid["error"]; ok {
 			ctx.AbortWithError(500, errors.New(err))
 		}
@@ -79,9 +79,9 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	var ans interface{}
 	var err error
 
-	// check if needed post should be written by team, user or all
-	if authorType == "team" {
-		ans, err = h.services.Api.GetPostsFromTeams(user)
+	// check if needed post should be written by pseudonym, user or all
+	if authorType == "pseudonym" {
+		ans, err = h.services.Api.GetPostsFromPseudonyms(user)
 	} else if authorType == "user" {
 		ans, err = h.services.Api.GetPostsFromUsers(user)
 	} else {
@@ -100,8 +100,8 @@ func (h Handler) follow(ctx *gin.Context) {
 	user := res.(models.User)
 	followed := ctx.Query("followed")
 	var err error
-	if followType == "team" {
-		err = h.services.FollowTeam(user, followed)
+	if followType == "pseudonym" {
+		err = h.services.FollowPseudonym(user, followed)
 	} else if followType == "user" {
 		err = h.services.FollowUser(user, followed)
 	}
@@ -119,9 +119,9 @@ func (h Handler) getNewPosts(ctx *gin.Context) {
 	var ans interface{}
 	var err error
 
-	// check if needed post should be written by team, user or all
-	if authorType == "team" {
-		ans, err = h.services.Api.GetNewPostsFromTeams(user)
+	// check if needed post should be written by pseudonym, user or all
+	if authorType == "pseudonym" {
+		ans, err = h.services.Api.GetNewPostsFromPseudonyms(user)
 	} else if authorType == "user" {
 		ans, err = h.services.Api.GetNewPostsFromUsers(user)
 	} else {
@@ -145,28 +145,28 @@ func (h Handler) getFollowing(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
-// function for deleting a team based on its id
-func (h Handler) deleteTeam(ctx *gin.Context) {
-	var team models.Team
-	if err := ctx.BindJSON(&team); err != nil {
-		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the team model"))
+// function for deleting a pseudonym based on its id
+func (h Handler) deletePseudonym(ctx *gin.Context) {
+	var pseudonym models.Pseudonym
+	if err := ctx.BindJSON(&pseudonym); err != nil {
+		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the pseudonym model"))
 		return
 	}
-	if err := h.services.Api.DeleteTeam(team); err != nil {
+	if err := h.services.Api.DeletePseudonym(pseudonym); err != nil {
 		ctx.AbortWithError(422, errors.New("invalid data"))
 
 	}
 	ctx.JSON(200, gin.H{})
 }
 
-func (h Handler) updateTeam(ctx *gin.Context) {
-	var team models.Team
-	if err := ctx.BindJSON(&team); err != nil {
-		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the team model"))
+func (h Handler) updatePseudonym(ctx *gin.Context) {
+	var pseudonym models.Pseudonym
+	if err := ctx.BindJSON(&pseudonym); err != nil {
+		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the pseudonym model"))
 		return
 	}
 
-	if err := h.services.Api.UpdateTeam(team); err != nil {
+	if err := h.services.Api.UpdatePseudonym(pseudonym); err != nil {
 		ctx.AbortWithError(422, errors.New("invalid data"))
 	}
 

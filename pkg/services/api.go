@@ -18,14 +18,14 @@ func NewApiService(repo repository.Repository) *ApiService {
 	return &ApiService{repo: repo}
 }
 
-// gets Team model by its name in the transaction
+// gets Pseudonym model by its name in the transaction
 
-// gets Team model by its name from the database
-func (a ApiService) GetTeamByTeamName(teamName string) (models.Team, error) {
-	var team models.Team
-	team, err := a.repo.SqlQueries.GetTeamByTeamName(teamName)
+// gets Pseudonym model by its name from the database
+func (a ApiService) GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error) {
+	var pseudonym models.Pseudonym
+	pseudonym, err := a.repo.SqlQueries.GetPseudonymByPseudonymName(pseudonymName)
 
-	return team, err
+	return pseudonym, err
 }
 
 // gets User model by username from the database
@@ -36,28 +36,28 @@ func (a ApiService) GetUserByUsername(username string) (models.User, error) {
 	return user, err
 }
 
-// get all teams of the user from the database
-func (a ApiService) GetTeams(user models.User) ([]models.Team, error) {
+// get all pseudonyms of the user from the database
+func (a ApiService) GetPseudonyms(user models.User) ([]models.Pseudonym, error) {
 
-	var teams []models.Team
-	teams, err := a.repo.SqlQueries.GetUserTeams(user)
+	var pseudonyms []models.Pseudonym
+	pseudonyms, err := a.repo.SqlQueries.GetUserPseudonyms(user)
 
-	return teams, err
+	return pseudonyms, err
 }
 
-// create a new team in the database for the given user
-func (a ApiService) CreateTeam(team models.Team, user models.User) map[string]string {
+// create a new pseudonym in the database for the given user
+func (a ApiService) CreatePseudonym(pseudonym models.Pseudonym, user models.User) map[string]string {
 
-	invalid := team.IsValid()
-	team.TeamLeaderId = user.Id
+	invalid := pseudonym.IsValid()
+	pseudonym.PseudonymLeaderId = user.Id
 	tx := a.repo.SqlQueries.StartTransaction()
 
 	if len(invalid) == 0 {
-		if err := tx.AddTeam(team); err != nil {
+		if err := tx.AddPseudonym(pseudonym); err != nil {
 			invalid["error"] = err.Error()
 		} else {
-			team, _ = tx.GetTeamByTeamName(team.TeamName)
-			membership := models.Membership{UserId: team.TeamLeaderId, TeamId: team.Id, IsEditor: true}
+			pseudonym, _ = tx.GetPseudonymByPseudonymName(pseudonym.PseudonymName)
+			membership := models.Membership{UserId: pseudonym.PseudonymLeaderId, PseudonymId: pseudonym.Id, IsEditor: true}
 			tx.AddMembership(membership)
 
 		}
@@ -70,7 +70,7 @@ func (a ApiService) CreateTeam(team models.Team, user models.User) map[string]st
 	return invalid
 }
 
-// create a new post in the database for the given user or team
+// create a new post in the database for the given user or pseudonym
 func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string {
 	post.CreatedAt = time.Now()
 	post.UpdatedAt = time.Now()
@@ -84,8 +84,8 @@ func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string
 			}
 
 		} else {
-			post := models.TeamPost{TeamId: authorId, Post: post}
-			err := a.repo.SqlQueries.AddTeamPost(post)
+			post := models.PseudonymPost{PseudonymId: authorId, Post: post}
+			err := a.repo.SqlQueries.AddPseudonymPost(post)
 			if err != nil {
 				invalid["error"] = err.Error()
 			}
@@ -95,28 +95,28 @@ func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string
 	return invalid
 }
 
-func (a ApiService) GetPostsFromTeams(user models.User) ([]struct {
-	models.Team
-	models.TeamPost
+func (a ApiService) GetPostsFromPseudonyms(user models.User) ([]struct {
+	models.Pseudonym
+	models.PseudonymPost
 }, error) {
-	posts, err := a.repo.SqlQueries.GetTeamPosts(user)
+	posts, err := a.repo.SqlQueries.GetPseudonymPosts(user)
 	return posts, err
 }
 
-func (a ApiService) GetNewPostsFromTeams(user models.User) ([]struct {
-	models.Team
-	models.TeamPost
+func (a ApiService) GetNewPostsFromPseudonyms(user models.User) ([]struct {
+	models.Pseudonym
+	models.PseudonymPost
 }, error) {
-	posts, err := a.repo.SqlQueries.GetNewTeamPosts(user)
+	posts, err := a.repo.SqlQueries.GetNewPseudonymPosts(user)
 	return posts, err
 }
 
-func (a ApiService) FollowTeam(user models.User, teamName string) error {
-	team, err := a.GetTeamByTeamName(teamName)
+func (a ApiService) FollowPseudonym(user models.User, pseudonymName string) error {
+	pseudonym, err := a.GetPseudonymByPseudonymName(pseudonymName)
 	if err != nil {
 		return err
 	}
-	return a.repo.FollowTeam(user, team)
+	return a.repo.FollowPseudonym(user, pseudonym)
 }
 
 func (a ApiService) FollowUser(follower models.User, userName string) error {
@@ -146,9 +146,9 @@ func (a ApiService) GetNewPostsFromUsers(user models.User) ([]struct {
 
 // get all posts available for the given user from the database
 // func (a ApiService) GetAllPosts(user models.User) ([]models.Post, error) {
-// 	teamPosts, _ := a.GetPostsFromTeams(user)
+// 	pseudonymPosts, _ := a.GetPostsFromPseudonyms(user)
 // 	userPosts, _ := a.GetPostsFromUsers(user)
-// 	posts := teamPosts
+// 	posts := pseudonymPosts
 // 	posts = append(posts, userPosts...)
 // 	return posts, nil
 // }
@@ -158,12 +158,12 @@ func (a ApiService) GetFollowing(user models.User) ([]models.User, error) {
 	return users, err
 }
 
-func (a ApiService) DeleteTeam(team models.Team) error {
-	err := a.repo.SqlQueries.DeleteTeam(team)
+func (a ApiService) DeletePseudonym(pseudonym models.Pseudonym) error {
+	err := a.repo.SqlQueries.DeletePseudonym(pseudonym)
 	return err
 }
 
-func (a ApiService) UpdateTeam(team models.Team) error {
-	err := a.repo.SqlQueries.UpdateTeam(team)
+func (a ApiService) UpdatePseudonym(pseudonym models.Pseudonym) error {
+	err := a.repo.SqlQueries.UpdatePseudonym(pseudonym)
 	return err
 }

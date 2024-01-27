@@ -6,21 +6,21 @@ import (
 )
 
 type SqlQueries interface {
-	FollowTeam(user models.User, team models.Team) error
+	FollowPseudonym(user models.User, pseudonym models.Pseudonym) error
 	FollowUser(follower models.User, user models.User) error
-	GetTeamByTeamName(teamName string) (models.Team, error)
-	GetUserByUserame(teamName string) (models.User, error)
-	GetUserTeams(user models.User) ([]models.Team, error)
+	GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error)
+	GetUserByUserame(pseudonymName string) (models.User, error)
+	GetUserPseudonyms(user models.User) ([]models.Pseudonym, error)
 	AddMembership(models.Membership) error
 	AddUser(models.User) error
-	AddTeam(team models.Team) error
+	AddPseudonym(pseudonym models.Pseudonym) error
 	AddUserPost(post models.UserPost) error
-	AddTeamPost(post models.TeamPost) error
+	AddPseudonymPost(post models.PseudonymPost) error
 	AddFollowing(following models.Following) error
 	StartTransaction() Transaction
-	GetTeamPosts(user models.User) ([]struct {
-		models.Team
-		models.TeamPost
+	GetPseudonymPosts(user models.User) ([]struct {
+		models.Pseudonym
+		models.PseudonymPost
 	}, error)
 	GetUserPosts(user models.User) ([]struct {
 		models.User
@@ -30,13 +30,13 @@ type SqlQueries interface {
 		models.User
 		models.UserPost
 	}, error)
-	GetNewTeamPosts(user models.User) ([]struct {
-		models.Team
-		models.TeamPost
+	GetNewPseudonymPosts(user models.User) ([]struct {
+		models.Pseudonym
+		models.PseudonymPost
 	}, error)
 	GetFollowing(user models.User) ([]models.User, error)
-	UpdateTeam(team models.Team) error
-	DeleteTeam(team models.Team) error
+	UpdatePseudonym(pseudonym models.Pseudonym) error
+	DeletePseudonym(pseudonym models.Pseudonym) error
 }
 
 type Repository struct {
