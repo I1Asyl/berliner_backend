@@ -124,7 +124,7 @@ func (db Database) GetUserPosts(user models.User) ([]struct {
 		models.UserPost
 	}
 
-	err := db.Select(&newTable, fmt.Sprintf("SELECT user_post.*, user.username, user.first_name, user.last_name FROM user_post LEFT JOIN user on user_post.user_id = user.id WHERE user_post.user_id in (%v) OR user_post.user_id = ? ORDER BY updated_at DESC", users), user.Id, user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT user_post.*, user.username, user.first_name, user.last_name FROM user_post LEFT JOIN user on user_post.user_id = user.id WHERE (user_post.user_id in (%v) AND user_post.is_public) OR user_post.user_id = ? ORDER BY updated_at DESC", users), user.Id, user.Id)
 	return newTable, err
 
 }
@@ -139,7 +139,7 @@ func (db Database) GetPseudonymPosts(user models.User) ([]struct {
 		models.Pseudonym
 		models.PseudonymPost
 	}
-	err := db.Select(&newTable, fmt.Sprintf("SELECT pseudonym_post.*, pseudonym.pseudonym_name FROM pseudonym_post LEFT JOIN pseudonym on pseudonym_post.pseudonym_id = pseudonym.id WHERE pseudonym_post.pseudonym_id in (%v) ORDER BY updated_at DESC", pseudonyms), user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT pseudonym_post.*, pseudonym.pseudonym_name FROM pseudonym_post LEFT JOIN pseudonym on pseudonym_post.pseudonym_id = pseudonym.id WHERE pseudonym_post.pseudonym_id in (%v) AND (pseudonym_post.is_public OR pseudonym.pseudonym_leader_id = ?) ORDER BY updated_at DESC", pseudonyms), user.Id, user.Id)
 	return newTable, err
 
 }
