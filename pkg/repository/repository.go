@@ -18,6 +18,8 @@ type SqlQueries interface {
 	AddPseudonym(pseudonym models.Pseudonym) error
 	AddUserPost(post models.UserPost) error
 	AddPseudonymPost(post models.PseudonymPost) error
+	DeleteUserPost(post models.UserPost) error
+	DeletePseudonymPost(post models.PseudonymPost) error
 	AddFollowing(following models.Following) error
 	StartTransaction() Transaction
 	GetPseudonymPosts(user models.User) ([]struct {

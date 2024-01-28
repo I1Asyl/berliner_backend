@@ -30,7 +30,7 @@ type Api interface {
 	GetUserByUsername(username string) (models.User, error)
 	GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error)
 	CreatePost(post models.Post, autthorId int) map[string]string
-	//DeletePost(postId int) error
+	DeletePost(post models.Post) error
 	GetPostsFromPseudonyms(user models.User) ([]struct {
 		models.Pseudonym
 		models.PseudonymPost

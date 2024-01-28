@@ -4,7 +4,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/I1Asyl/ginBerliner/models"
@@ -54,10 +53,6 @@ func (h Handler) createPost(ctx *gin.Context) {
 		ctx.AbortWithError(400, errors.New("invalid id"))
 	}
 	if err := ctx.BindJSON(&post); err != nil {
-		fmt.Println(post, err)
-		var js interface{}
-		err = ctx.BindJSON(&js)
-		fmt.Println(js, err)
 		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the post model"))
 		return
 	}
@@ -71,19 +66,18 @@ func (h Handler) createPost(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{})
 }
 
-// func (h Handler) deletePost(ctx *gin.Context) {
-// 	var post models.Post
-// 	id, err := strconv.Atoi(ctx.Query("id"))
-// 	if err != nil {
-// 		ctx.AbortWithError(400, errors.New("invalid id"))
-// 	}
-
-// 	if err := h.services.Api.DeletePost(id); err != nil {
-// 		ctx.AbortWithError(422, err)
-// 		return
-// 	}
-// 	ctx.JSON(200, gin.H{"success"})
-// }
+func (h Handler) deletePost(ctx *gin.Context) {
+	var post models.Post
+	if err := ctx.BindJSON(&post); err != nil {
+		ctx.AbortWithError(401, err)
+		return
+	}
+	if err := h.services.Api.DeletePost(post); err != nil {
+		ctx.AbortWithError(422, err)
+		return
+	}
+	ctx.JSON(200, gin.H{})
+}
 
 // method for reading posts
 func (h Handler) getPosts(ctx *gin.Context) {
@@ -145,7 +139,7 @@ func (h Handler) unfollow(ctx *gin.Context) {
 		err = h.services.UnfollowUser(user, followed.Username)
 	}
 	if err != nil {
-		ctx.AbortWithError(400, err)
+		ctx.AbortWithError(422, err)
 	} else {
 		ctx.JSON(200, "success")
 	}

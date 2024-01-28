@@ -2,7 +2,6 @@ package services
 
 import (
 	"time"
-
 	"github.com/I1Asyl/ginBerliner/models"
 	"github.com/I1Asyl/ginBerliner/pkg/repository"
 )
@@ -95,29 +94,18 @@ func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string
 	return invalid
 }
 
-// func (a ApiService) DeletePost(authorType string, authorId int) map[string]string {
-// 	post.CreatedAt = time.Now()
-// 	post.UpdatedAt = time.Now()
-// 	invalid := post.IsValid()
-// 	if len(invalid) == 0 {
-// 		if post.AuthorType == "user" {
-// 			post := models.UserPost{UserId: authorId, Post: post}
-// 			err := a.repo.SqlQueries.AddUserPost(post)
-// 			if err != nil {
-// 				invalid["error"] = err.Error()
-// 			}
+func (a ApiService) DeletePost(post models.Post) error {
+	var err error
 
-// 		} else {
-// 			post := models.PseudonymPost{PseudonymId: authorId, Post: post}
-// 			err := a.repo.SqlQueries.AddPseudonymPost(post)
-// 			if err != nil {
-// 				invalid["error"] = err.Error()
-// 			}
-// 		}
-
-// 	}
-// 	return invalid
-// }
+	if post.AuthorType == "user" {
+		userPost := models.UserPost{Post: post}
+		err = a.repo.SqlQueries.DeleteUserPost(userPost)
+	} else {
+		pseudonymPost := models.PseudonymPost{Post: post}
+		err = a.repo.SqlQueries.DeletePseudonymPost(pseudonymPost)
+	}
+	return err
+}
 
 
 func (a ApiService) GetPostsFromPseudonyms(user models.User) ([]struct {
@@ -154,9 +142,11 @@ func (a ApiService) FollowUser(follower models.User, userName string) error {
 
 func (a ApiService) UnfollowPseudonym(user models.User, pseudonymName string) error {
 	pseudonym, err := a.GetPseudonymByPseudonymName(pseudonymName)
+
 	if err != nil {
 		return err
 	}
+
 	return a.repo.UnfollowPseudonym(user, pseudonym)
 }
 

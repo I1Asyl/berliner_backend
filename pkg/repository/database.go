@@ -106,10 +106,18 @@ func (db Database) AddUserPost(post models.UserPost) error {
 	_, err := db.Exec("INSERT INTO user_post (author_type, content, updated_at, created_at, user_id, is_public) VALUES (?, ?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.UserId, post.IsPublic)
 	return err
 }
-
 func (db Database) AddPseudonymPost(post models.PseudonymPost) error {
 	_, err := db.Exec("INSERT INTO pseudonym_post (author_type, content, updated_at, created_at, pseudonym_id, is_public) VALUES (?, ?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.PseudonymId, post.IsPublic)
 	fmt.Println(post.PseudonymId)
+	return err
+}
+func (db Database) DeleteUserPost(post models.UserPost) error {
+	_, err := db.Exec("DELETE FROM user_post WHERE id = ?;", post.Id)
+	return err
+}
+
+func (db Database) DeletePseudonymPost(post models.PseudonymPost) error {
+	_, err := db.Exec("DELETE FROM pseudonym_post WHERE id = ?;", post.Id)
 	return err
 }
 
@@ -139,7 +147,7 @@ func (db Database) GetPseudonymPosts(user models.User) ([]struct {
 		models.Pseudonym
 		models.PseudonymPost
 	}
-	err := db.Select(&newTable, fmt.Sprintf("SELECT pseudonym_post.*, pseudonym.pseudonym_name FROM pseudonym_post LEFT JOIN pseudonym on pseudonym_post.pseudonym_id = pseudonym.id WHERE pseudonym_post.pseudonym_id in (%v) AND (pseudonym_post.is_public OR pseudonym.pseudonym_leader_id = ?) ORDER BY updated_at DESC", pseudonyms), user.Id, user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT pseudonym_post.*, pseudonym.pseudonym_name, pseudonym.pseudonym_leader_id FROM pseudonym_post LEFT JOIN pseudonym on pseudonym_post.pseudonym_id = pseudonym.id WHERE pseudonym_post.pseudonym_id in (%v) AND (pseudonym_post.is_public OR pseudonym.pseudonym_leader_id = ?) ORDER BY updated_at DESC", pseudonyms), user.Id, user.Id)
 	return newTable, err
 
 }
