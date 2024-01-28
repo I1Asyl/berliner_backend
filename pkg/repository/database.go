@@ -185,6 +185,17 @@ func (db Database) FollowUser(follower models.User, user models.User) error {
 	return err
 }
 
+func (db Database) UnfollowPseudonym(user models.User, pseudonym models.Pseudonym) error {
+	query := "DELETE FROM membership WHERE pseudonym_id = ? AND user_id = ?"
+	_, err := db.Exec(query, pseudonym.Id, user.Id)
+	return err
+}
+func (db Database) UnfollowUser(follower models.User, user models.User) error {
+	query := "DELETE FROM following WHERE user_id = ? AND follower_id = ?"
+	_, err := db.Exec(query, user.Id, follower.Id)
+	return err
+}
+
 func (db Database) GetFollowing(user models.User) ([]models.User, error) {
 	var users []models.User
 	err := db.Select(&users, "SELECT * FROM following WHERE follower_id = ?", user.Id)

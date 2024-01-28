@@ -71,6 +71,20 @@ func (h Handler) createPost(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{})
 }
 
+// func (h Handler) deletePost(ctx *gin.Context) {
+// 	var post models.Post
+// 	id, err := strconv.Atoi(ctx.Query("id"))
+// 	if err != nil {
+// 		ctx.AbortWithError(400, errors.New("invalid id"))
+// 	}
+
+// 	if err := h.services.Api.DeletePost(id); err != nil {
+// 		ctx.AbortWithError(422, err)
+// 		return
+// 	}
+// 	ctx.JSON(200, gin.H{"success"})
+// }
+
 // method for reading posts
 func (h Handler) getPosts(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
@@ -98,12 +112,37 @@ func (h Handler) follow(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	followType := ctx.DefaultQuery("follow", "")
 	user := res.(models.User)
-	followed := ctx.Query("followed")
+	var followed models.User
+	if err := ctx.BindJSON(&followed); err != nil {
+		ctx.AbortWithError(400, err)
+	}
 	var err error
 	if followType == "pseudonym" {
-		err = h.services.FollowPseudonym(user, followed)
+		err = h.services.FollowPseudonym(user, followed.Username)
 	} else if followType == "user" {
-		err = h.services.FollowUser(user, followed)
+		err = h.services.FollowUser(user, followed.Username)
+	}
+	if err != nil {
+		ctx.AbortWithError(400, err)
+	} else {
+		ctx.JSON(200, "success")
+	}
+}
+
+func (h Handler) unfollow(ctx *gin.Context) {
+	res, _ := ctx.Get("user")
+	followType := ctx.DefaultQuery("follow", "")
+	user := res.(models.User)
+	var followed models.User
+	if err := ctx.BindJSON(&followed); err != nil {
+		ctx.AbortWithError(400, err)
+	}
+
+	var err error
+	if followType == "pseudonym" {
+		err = h.services.UnfollowPseudonym(user, followed.Username)
+	} else if followType == "user" {
+		err = h.services.UnfollowUser(user, followed.Username)
 	}
 	if err != nil {
 		ctx.AbortWithError(400, err)

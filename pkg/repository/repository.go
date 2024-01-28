@@ -7,7 +7,9 @@ import (
 
 type SqlQueries interface {
 	FollowPseudonym(user models.User, pseudonym models.Pseudonym) error
-	FollowUser(follower models.User, user models.User) error
+	FollowUser(follower models.User, user models.User) error	
+	UnfollowPseudonym(user models.User, pseudonym models.Pseudonym) error
+	UnfollowUser(follower models.User, user models.User) error
 	GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error)
 	GetUserByUserame(pseudonymName string) (models.User, error)
 	GetUserPseudonyms(user models.User) ([]models.Pseudonym, error)

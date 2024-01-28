@@ -22,12 +22,15 @@ type Authorization interface {
 type Api interface {
 	FollowPseudonym(user models.User, pseudonymName string) error
 	FollowUser(follower models.User, userName string) error
+	UnfollowPseudonym(user models.User, pseudonymName string) error
+	UnfollowUser(follower models.User, userName string) error
 	DeletePseudonym(pseudonym models.Pseudonym) error
 	UpdatePseudonym(pseudonym models.Pseudonym) error
 	GetFollowing(user models.User) ([]models.User, error)
 	GetUserByUsername(username string) (models.User, error)
 	GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error)
 	CreatePost(post models.Post, autthorId int) map[string]string
+	//DeletePost(postId int) error
 	GetPostsFromPseudonyms(user models.User) ([]struct {
 		models.Pseudonym
 		models.PseudonymPost

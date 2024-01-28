@@ -95,6 +95,31 @@ func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string
 	return invalid
 }
 
+// func (a ApiService) DeletePost(authorType string, authorId int) map[string]string {
+// 	post.CreatedAt = time.Now()
+// 	post.UpdatedAt = time.Now()
+// 	invalid := post.IsValid()
+// 	if len(invalid) == 0 {
+// 		if post.AuthorType == "user" {
+// 			post := models.UserPost{UserId: authorId, Post: post}
+// 			err := a.repo.SqlQueries.AddUserPost(post)
+// 			if err != nil {
+// 				invalid["error"] = err.Error()
+// 			}
+
+// 		} else {
+// 			post := models.PseudonymPost{PseudonymId: authorId, Post: post}
+// 			err := a.repo.SqlQueries.AddPseudonymPost(post)
+// 			if err != nil {
+// 				invalid["error"] = err.Error()
+// 			}
+// 		}
+
+// 	}
+// 	return invalid
+// }
+
+
 func (a ApiService) GetPostsFromPseudonyms(user models.User) ([]struct {
 	models.Pseudonym
 	models.PseudonymPost
@@ -125,6 +150,22 @@ func (a ApiService) FollowUser(follower models.User, userName string) error {
 		return err
 	}
 	return a.repo.FollowUser(follower, user)
+}
+
+func (a ApiService) UnfollowPseudonym(user models.User, pseudonymName string) error {
+	pseudonym, err := a.GetPseudonymByPseudonymName(pseudonymName)
+	if err != nil {
+		return err
+	}
+	return a.repo.UnfollowPseudonym(user, pseudonym)
+}
+
+func (a ApiService) UnfollowUser(follower models.User, userName string) error {
+	user, err := a.GetUserByUsername(userName)
+	if err != nil {
+		return err
+	}
+	return a.repo.UnfollowUser(follower, user)
 }
 
 // get all user's following's posts from the database
