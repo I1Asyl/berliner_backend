@@ -20,20 +20,20 @@ type Authorization interface {
 
 // all api services
 type Api interface {
-	FollowPseudonym(user models.User, pseudonymName string) error
+	FollowChannel(user models.User, channelName string) error
 	FollowUser(follower models.User, userName string) error
-	UnfollowPseudonym(user models.User, pseudonymName string) error
+	UnfollowChannel(user models.User, channelName string) error
 	UnfollowUser(follower models.User, userName string) error
-	DeletePseudonym(pseudonym models.Pseudonym) error
-	UpdatePseudonym(pseudonym models.Pseudonym) error
+	DeleteChannel(channel models.Channel) error
+	UpdateChannel(channel models.Channel) error
 	GetFollowing(user models.User) ([]models.User, error)
 	GetUserByUsername(username string) (models.User, error)
-	GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error)
+	GetChannelByChannelName(channelName string) (models.Channel, error)
 	CreatePost(post models.Post, autthorId int) map[string]string
 	DeletePost(post models.Post) error
-	GetPostsFromPseudonyms(user models.User) ([]struct {
-		models.Pseudonym
-		models.PseudonymPost
+	GetPostsFromChannels(user models.User) ([]struct {
+		models.Channel
+		models.ChannelPost
 	}, error)
 	GetPostsFromUsers(user models.User) ([]struct {
 		models.User
@@ -43,13 +43,13 @@ type Api interface {
 		models.User
 		models.UserPost
 	}, error)
-	GetNewPostsFromPseudonyms(user models.User) ([]struct {
-		models.Pseudonym
-		models.PseudonymPost
+	GetNewPostsFromChannels(user models.User) ([]struct {
+		models.Channel
+		models.ChannelPost
 	}, error)
 	//GetAllPosts(user models.User) ([]models.Post, error)
-	GetPseudonyms(user models.User) ([]models.Pseudonym, error)
-	CreatePseudonym(pseudonym models.Pseudonym, user models.User) map[string]string
+	GetChannels(user models.User) ([]models.Channel, error)
+	CreateChannel(channel models.Channel, user models.User) map[string]string
 }
 
 // func clearAllData() {

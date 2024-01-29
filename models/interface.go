@@ -32,14 +32,14 @@ func (user User) IsValid() map[string]string {
 	return validMap
 }
 
-func (pseudonym Pseudonym) IsValid() map[string]string {
+func (channel Channel) IsValid() map[string]string {
 	validMap := make(map[string]string)
 
-	if !validName(pseudonym.PseudonymName) {
-		validMap["pseudonymName"] = "Invalid pseudonym name"
+	if !validName(channel.ChannelName) {
+		validMap["channelName"] = "Invalid channel name"
 	}
-	if pseudonym.PseudonymDescription == "" {
-		validMap["pseudonymDescription"] = "Pseudonym description can not be empty"
+	if channel.ChannelDescription == "" {
+		validMap["channelDescription"] = "Channel description can not be empty"
 	}
 	return validMap
 }
@@ -62,11 +62,11 @@ func (post UserPost) IsValid() map[string]string {
 	return validMap
 }
 
-func (post PseudonymPost) IsValid() map[string]string {
+func (post ChannelPost) IsValid() map[string]string {
 	validMap := make(map[string]string)
 
-	if post.PseudonymId == 0 {
-		validMap["pseudonymAuthorId"] = "Invalid pseudonym author id"
+	if post.ChannelId == 0 {
+		validMap["channelAuthorId"] = "Invalid channel author id"
 	}
 	return validMap
 }

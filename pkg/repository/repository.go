@@ -6,25 +6,25 @@ import (
 )
 
 type SqlQueries interface {
-	FollowPseudonym(user models.User, pseudonym models.Pseudonym) error
+	FollowChannel(user models.User, channel models.Channel) error
 	FollowUser(follower models.User, user models.User) error	
-	UnfollowPseudonym(user models.User, pseudonym models.Pseudonym) error
+	UnfollowChannel(user models.User, channel models.Channel) error
 	UnfollowUser(follower models.User, user models.User) error
-	GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error)
-	GetUserByUserame(pseudonymName string) (models.User, error)
-	GetUserPseudonyms(user models.User) ([]models.Pseudonym, error)
+	GetChannelByChannelName(channelName string) (models.Channel, error)
+	GetUserByUserame(channelName string) (models.User, error)
+	GetUserChannels(user models.User) ([]models.Channel, error)
 	AddMembership(models.Membership) error
 	AddUser(models.User) error
-	AddPseudonym(pseudonym models.Pseudonym) error
+	AddChannel(channel models.Channel) error
 	AddUserPost(post models.UserPost) error
-	AddPseudonymPost(post models.PseudonymPost) error
+	AddChannelPost(post models.ChannelPost) error
 	DeleteUserPost(post models.UserPost) error
-	DeletePseudonymPost(post models.PseudonymPost) error
+	DeleteChannelPost(post models.ChannelPost) error
 	AddFollowing(following models.Following) error
 	StartTransaction() Transaction
-	GetPseudonymPosts(user models.User) ([]struct {
-		models.Pseudonym
-		models.PseudonymPost
+	GetChannelPosts(user models.User) ([]struct {
+		models.Channel
+		models.ChannelPost
 	}, error)
 	GetUserPosts(user models.User) ([]struct {
 		models.User
@@ -34,13 +34,13 @@ type SqlQueries interface {
 		models.User
 		models.UserPost
 	}, error)
-	GetNewPseudonymPosts(user models.User) ([]struct {
-		models.Pseudonym
-		models.PseudonymPost
+	GetNewChannelPosts(user models.User) ([]struct {
+		models.Channel
+		models.ChannelPost
 	}, error)
 	GetFollowing(user models.User) ([]models.User, error)
-	UpdatePseudonym(pseudonym models.Pseudonym) error
-	DeletePseudonym(pseudonym models.Pseudonym) error
+	UpdateChannel(channel models.Channel) error
+	DeleteChannel(channel models.Channel) error
 }
 
 type Repository struct {

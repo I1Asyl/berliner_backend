@@ -29,11 +29,11 @@ func (ni *NullInt64) UnmarshalJSON(b []byte) error {
 
 // all models and their attributes(collumns) are defined here
 
-type Pseudonym struct {
+type Channel struct {
 	Id              int    `json:"id" db:"id"`
-	PseudonymLeaderId    int    `json:"pseudonymLeaderId" db:"pseudonym_leader_id"`
-	PseudonymName        string `json:"pseudonymName" db:"pseudonym_name"`
-	PseudonymDescription string `json:"pseudonymDescription" db:"pseudonym_description"`
+	ChannelLeaderId    int    `json:"channelLeaderId" db:"channel_leader_id"`
+	ChannelName        string `json:"channelName" db:"channel_name"`
+	ChannelDescription string `json:"channelDescription" db:"channel_description"`
 }
 
 type User struct {
@@ -48,7 +48,7 @@ type User struct {
 type Membership struct {
 	Id       int  `json:"id" db:"id"`
 	UserId   int  `json:"userId" db:"user_id"`
-	PseudonymId   int  `json:"pseudonymId" db:"pseudonym_id"`
+	ChannelId   int  `json:"channelId" db:"channel_id"`
 	IsEditor bool `json:"isEditor" db:"is_editor"`
 }
 type Post struct {
@@ -64,9 +64,9 @@ type UserPost struct {
 	Post
 }
 
-type PseudonymPost struct {
+type ChannelPost struct {
 	Post
-	PseudonymId int `json:"pseudonymId" db:"pseudonym_id"`
+	ChannelId int `json:"channelId" db:"channel_id"`
 }
 
 type Following struct {

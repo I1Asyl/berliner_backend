@@ -285,33 +285,33 @@ func TestHashPassword(t *testing.T) {
 	}
 }
 
-func TestCreatePseudonym(t *testing.T) {
+func TestCreateChannel(t *testing.T) {
 	testTable := []struct {
 		name       string
-		pseudonym       models.Pseudonym
-		pseudonymLeader models.User
+		channel       models.Channel
+		channelLeader models.User
 		expected   map[string]string
 	}{
 		{
 			name: "success",
-			pseudonym: models.Pseudonym{
-				PseudonymName:        "Pseudonym",
-				PseudonymLeaderId:    1,
-				PseudonymDescription: "hoho",
+			channel: models.Channel{
+				ChannelName:        "Channel",
+				ChannelLeaderId:    1,
+				ChannelDescription: "hoho",
 			},
-			pseudonymLeader: testUser,
+			channelLeader: testUser,
 			expected:   map[string]string{},
 		},
 		{
 			name: "error",
-			pseudonym: models.Pseudonym{
-				PseudonymName:        "Pseudonym",
-				PseudonymLeaderId:    1,
-				PseudonymDescription: "",
+			channel: models.Channel{
+				ChannelName:        "Channel",
+				ChannelLeaderId:    1,
+				ChannelDescription: "",
 			},
-			pseudonymLeader: testUser,
+			channelLeader: testUser,
 			expected: map[string]string{
-				"pseudonymDescription": "Pseudonym description can not be empty",
+				"channelDescription": "Channel description can not be empty",
 			},
 		},
 	}
@@ -323,7 +323,7 @@ func TestCreatePseudonym(t *testing.T) {
 				t.Errorf("Migration problems %s ", err)
 			}
 			services.AddUser(testUser)
-			err := services.CreatePseudonym(testCase.pseudonym, testUser)
+			err := services.CreateChannel(testCase.channel, testUser)
 			if !reflect.DeepEqual(err, testCase.expected) {
 				t.Errorf("Expected %v, got %v", testCase.expected, err)
 			}
@@ -336,27 +336,27 @@ func TestCreatePseudonym(t *testing.T) {
 
 }
 
-// gets Pseudonym model by its name in the transaction
-func TestGetPseudonymByPseudonymName(t *testing.T) {
+// gets Channel model by its name in the transaction
+func TestGetChannelByChannelName(t *testing.T) {
 	testTable := []struct {
 		name     string
-		pseudonymName string
-		expected models.Pseudonym
+		channelName string
+		expected models.Channel
 	}{
 		{
 			name:     "success",
-			pseudonymName: "Pseudonym",
-			expected: models.Pseudonym{
-				PseudonymName:        "Pseudonym",
-				PseudonymLeaderId:    1,
-				PseudonymDescription: "hoho",
+			channelName: "Channel",
+			expected: models.Channel{
+				ChannelName:        "Channel",
+				ChannelLeaderId:    1,
+				ChannelDescription: "hoho",
 				Id:              1,
 			},
 		},
 		{
 			name:     "error1",
-			pseudonymName: "213",
-			expected: models.Pseudonym{},
+			channelName: "213",
+			expected: models.Channel{},
 		},
 	}
 
@@ -364,15 +364,15 @@ func TestGetPseudonymByPseudonymName(t *testing.T) {
 		t.Errorf("Migration problems %s ", err)
 	}
 	services.AddUser(testUser)
-	services.CreatePseudonym(models.Pseudonym{
-		PseudonymName:        "Pseudonym",
-		PseudonymLeaderId:    1,
-		PseudonymDescription: "hoho",
+	services.CreateChannel(models.Channel{
+		ChannelName:        "Channel",
+		ChannelLeaderId:    1,
+		ChannelDescription: "hoho",
 	}, testUser)
 	for _, testCase := range testTable {
-		pseudonym, _ := services.GetPseudonymByPseudonymName(testCase.pseudonymName)
-		if !reflect.DeepEqual(pseudonym, testCase.expected) {
-			t.Errorf("Expected %v, got %v", testCase.expected, pseudonym)
+		channel, _ := services.GetChannelByChannelName(testCase.channelName)
+		if !reflect.DeepEqual(channel, testCase.expected) {
+			t.Errorf("Expected %v, got %v", testCase.expected, channel)
 		}
 	}
 	if err := repo.Migration.Down(); err != nil {
@@ -417,19 +417,19 @@ func TestGetUserByUsername(t *testing.T) {
 	}
 }
 
-// // create a new pseudonym in the database for the given user
-// func (a ApiService) CreatePseudonym(pseudonym models.Pseudonym, user models.User) map[string]string {
+// // create a new channel in the database for the given user
+// func (a ApiService) CreateChannel(channel models.Channel, user models.User) map[string]string {
 
-// 	invalid := pseudonym.IsValid()
-// 	pseudonym.PseudonymLeaderId = user.Id
+// 	invalid := channel.IsValid()
+// 	channel.ChannelLeaderId = user.Id
 // 	tx := a.repo.SqlQueries.StartTransaction()
 
 // 	if len(invalid) == 0 {
-// 		if err := tx.AddPseudonym(pseudonym); err != nil {
+// 		if err := tx.AddChannel(channel); err != nil {
 // 			invalid["common"] = err.Error()
 // 		} else {
-// 			pseudonym, _ = tx.GetPseudonymByPseudonymName(pseudonym.PseudonymName)
-// 			membership := models.Membership{UserId: pseudonym.PseudonymLeaderId, PseudonymId: pseudonym.Id, IsEditor: true}
+// 			channel, _ = tx.GetChannelByChannelName(channel.ChannelName)
+// 			membership := models.Membership{UserId: channel.ChannelLeaderId, ChannelId: channel.Id, IsEditor: true}
 // 			tx.AddMembership(membership)
 
 // 		}
@@ -442,7 +442,7 @@ func TestGetUserByUsername(t *testing.T) {
 // 	return invalid
 // }
 
-// // create a new post in the database for the given user or pseudonym
+// // create a new post in the database for the given user or channel
 // func (a ApiService) CreatePost(post models.Post) map[string]string {
 
 // 	invalid := post.IsValid()
@@ -457,9 +457,9 @@ func TestGetUserByUsername(t *testing.T) {
 // 	return invalid
 // }
 
-// // get all user's pseudonym posts from the database
-// func (a ApiService) GetPostsFromPseudonyms(user models.User) ([]models.Post, error) {
-// 	posts, err := a.repo.SqlQueries.GetPseudonymPosts(user)
+// // get all user's channel posts from the database
+// func (a ApiService) GetPostsFromChannels(user models.User) ([]models.Post, error) {
+// 	posts, err := a.repo.SqlQueries.GetChannelPosts(user)
 // 	return posts, err
 // }
 
@@ -471,9 +471,9 @@ func TestGetUserByUsername(t *testing.T) {
 
 // // get all posts available for the given user from the database
 // func (a ApiService) GetAllPosts(user models.User) ([]models.Post, error) {
-// 	pseudonymPosts, _ := a.GetPostsFromPseudonyms(user)
+// 	channelPosts, _ := a.GetPostsFromChannels(user)
 // 	userPosts, _ := a.GetPostsFromUsers(user)
-// 	posts := pseudonymPosts
+// 	posts := channelPosts
 // 	posts = append(posts, userPosts...)
 // 	return posts, nil
 // }
@@ -483,12 +483,12 @@ func TestGetUserByUsername(t *testing.T) {
 // 	return users, err
 // }
 
-// func (a ApiService) DeletePseudonym(pseudonym models.Pseudonym) error {
-// 	err := a.repo.SqlQueries.DeletePseudonym(pseudonym)
+// func (a ApiService) DeleteChannel(channel models.Channel) error {
+// 	err := a.repo.SqlQueries.DeleteChannel(channel)
 // 	return err
 // }
 
-// func (a ApiService) UpdatePseudonym(pseudonym models.Pseudonym) error {
-// 	err := a.repo.SqlQueries.UpdatePseudonym(pseudonym)
+// func (a ApiService) UpdateChannel(channel models.Channel) error {
+// 	err := a.repo.SqlQueries.UpdateChannel(channel)
 // 	return err
 // }

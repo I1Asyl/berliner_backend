@@ -7,9 +7,9 @@ DROP TABLE IF EXISTS `request`;
 
 DROP TABLE IF EXISTS `user_post`;
 
-DROP TABLE IF EXISTS `pseudonym_post`;
+DROP TABLE IF EXISTS `channel_post`;
 
-DROP TABLE IF EXISTS `pseudonym`;
+DROP TABLE IF EXISTS `channel`;
 
 DROP TABLE IF EXISTS `following`;
 

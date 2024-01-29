@@ -17,14 +17,14 @@ func NewApiService(repo repository.Repository) *ApiService {
 	return &ApiService{repo: repo}
 }
 
-// gets Pseudonym model by its name in the transaction
+// gets Channel model by its name in the transaction
 
-// gets Pseudonym model by its name from the database
-func (a ApiService) GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error) {
-	var pseudonym models.Pseudonym
-	pseudonym, err := a.repo.SqlQueries.GetPseudonymByPseudonymName(pseudonymName)
+// gets Channel model by its name from the database
+func (a ApiService) GetChannelByChannelName(channelName string) (models.Channel, error) {
+	var channel models.Channel
+	channel, err := a.repo.SqlQueries.GetChannelByChannelName(channelName)
 
-	return pseudonym, err
+	return channel, err
 }
 
 // gets User model by username from the database
@@ -35,28 +35,28 @@ func (a ApiService) GetUserByUsername(username string) (models.User, error) {
 	return user, err
 }
 
-// get all pseudonyms of the user from the database
-func (a ApiService) GetPseudonyms(user models.User) ([]models.Pseudonym, error) {
+// get all channels of the user from the database
+func (a ApiService) GetChannels(user models.User) ([]models.Channel, error) {
 
-	var pseudonyms []models.Pseudonym
-	pseudonyms, err := a.repo.SqlQueries.GetUserPseudonyms(user)
+	var channels []models.Channel
+	channels, err := a.repo.SqlQueries.GetUserChannels(user)
 
-	return pseudonyms, err
+	return channels, err
 }
 
-// create a new pseudonym in the database for the given user
-func (a ApiService) CreatePseudonym(pseudonym models.Pseudonym, user models.User) map[string]string {
+// create a new channel in the database for the given user
+func (a ApiService) CreateChannel(channel models.Channel, user models.User) map[string]string {
 
-	invalid := pseudonym.IsValid()
-	pseudonym.PseudonymLeaderId = user.Id
+	invalid := channel.IsValid()
+	channel.ChannelLeaderId = user.Id
 	tx := a.repo.SqlQueries.StartTransaction()
 
 	if len(invalid) == 0 {
-		if err := tx.AddPseudonym(pseudonym); err != nil {
+		if err := tx.AddChannel(channel); err != nil {
 			invalid["error"] = err.Error()
 		} else {
-			pseudonym, _ = tx.GetPseudonymByPseudonymName(pseudonym.PseudonymName)
-			membership := models.Membership{UserId: pseudonym.PseudonymLeaderId, PseudonymId: pseudonym.Id, IsEditor: true}
+			channel, _ = tx.GetChannelByChannelName(channel.ChannelName)
+			membership := models.Membership{UserId: channel.ChannelLeaderId, ChannelId: channel.Id, IsEditor: true}
 			tx.AddMembership(membership)
 
 		}
@@ -69,7 +69,7 @@ func (a ApiService) CreatePseudonym(pseudonym models.Pseudonym, user models.User
 	return invalid
 }
 
-// create a new post in the database for the given user or pseudonym
+// create a new post in the database for the given user or channel
 func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string {
 	post.CreatedAt = time.Now()
 	post.UpdatedAt = time.Now()
@@ -83,8 +83,8 @@ func (a ApiService) CreatePost(post models.Post, authorId int) map[string]string
 			}
 
 		} else {
-			post := models.PseudonymPost{PseudonymId: authorId, Post: post}
-			err := a.repo.SqlQueries.AddPseudonymPost(post)
+			post := models.ChannelPost{ChannelId: authorId, Post: post}
+			err := a.repo.SqlQueries.AddChannelPost(post)
 			if err != nil {
 				invalid["error"] = err.Error()
 			}
@@ -101,35 +101,35 @@ func (a ApiService) DeletePost(post models.Post) error {
 		userPost := models.UserPost{Post: post}
 		err = a.repo.SqlQueries.DeleteUserPost(userPost)
 	} else {
-		pseudonymPost := models.PseudonymPost{Post: post}
-		err = a.repo.SqlQueries.DeletePseudonymPost(pseudonymPost)
+		channelPost := models.ChannelPost{Post: post}
+		err = a.repo.SqlQueries.DeleteChannelPost(channelPost)
 	}
 	return err
 }
 
 
-func (a ApiService) GetPostsFromPseudonyms(user models.User) ([]struct {
-	models.Pseudonym
-	models.PseudonymPost
+func (a ApiService) GetPostsFromChannels(user models.User) ([]struct {
+	models.Channel
+	models.ChannelPost
 }, error) {
-	posts, err := a.repo.SqlQueries.GetPseudonymPosts(user)
+	posts, err := a.repo.SqlQueries.GetChannelPosts(user)
 	return posts, err
 }
 
-func (a ApiService) GetNewPostsFromPseudonyms(user models.User) ([]struct {
-	models.Pseudonym
-	models.PseudonymPost
+func (a ApiService) GetNewPostsFromChannels(user models.User) ([]struct {
+	models.Channel
+	models.ChannelPost
 }, error) {
-	posts, err := a.repo.SqlQueries.GetNewPseudonymPosts(user)
+	posts, err := a.repo.SqlQueries.GetNewChannelPosts(user)
 	return posts, err
 }
 
-func (a ApiService) FollowPseudonym(user models.User, pseudonymName string) error {
-	pseudonym, err := a.GetPseudonymByPseudonymName(pseudonymName)
+func (a ApiService) FollowChannel(user models.User, channelName string) error {
+	channel, err := a.GetChannelByChannelName(channelName)
 	if err != nil {
 		return err
 	}
-	return a.repo.FollowPseudonym(user, pseudonym)
+	return a.repo.FollowChannel(user, channel)
 }
 
 func (a ApiService) FollowUser(follower models.User, userName string) error {
@@ -140,14 +140,14 @@ func (a ApiService) FollowUser(follower models.User, userName string) error {
 	return a.repo.FollowUser(follower, user)
 }
 
-func (a ApiService) UnfollowPseudonym(user models.User, pseudonymName string) error {
-	pseudonym, err := a.GetPseudonymByPseudonymName(pseudonymName)
+func (a ApiService) UnfollowChannel(user models.User, channelName string) error {
+	channel, err := a.GetChannelByChannelName(channelName)
 
 	if err != nil {
 		return err
 	}
 
-	return a.repo.UnfollowPseudonym(user, pseudonym)
+	return a.repo.UnfollowChannel(user, channel)
 }
 
 func (a ApiService) UnfollowUser(follower models.User, userName string) error {
@@ -177,9 +177,9 @@ func (a ApiService) GetNewPostsFromUsers(user models.User) ([]struct {
 
 // get all posts available for the given user from the database
 // func (a ApiService) GetAllPosts(user models.User) ([]models.Post, error) {
-// 	pseudonymPosts, _ := a.GetPostsFromPseudonyms(user)
+// 	channelPosts, _ := a.GetPostsFromChannels(user)
 // 	userPosts, _ := a.GetPostsFromUsers(user)
-// 	posts := pseudonymPosts
+// 	posts := channelPosts
 // 	posts = append(posts, userPosts...)
 // 	return posts, nil
 // }
@@ -189,12 +189,12 @@ func (a ApiService) GetFollowing(user models.User) ([]models.User, error) {
 	return users, err
 }
 
-func (a ApiService) DeletePseudonym(pseudonym models.Pseudonym) error {
-	err := a.repo.SqlQueries.DeletePseudonym(pseudonym)
+func (a ApiService) DeleteChannel(channel models.Channel) error {
+	err := a.repo.SqlQueries.DeleteChannel(channel)
 	return err
 }
 
-func (a ApiService) UpdatePseudonym(pseudonym models.Pseudonym) error {
-	err := a.repo.SqlQueries.UpdatePseudonym(pseudonym)
+func (a ApiService) UpdateChannel(channel models.Channel) error {
+	err := a.repo.SqlQueries.UpdateChannel(channel)
 	return err
 }

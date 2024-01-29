@@ -10,11 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// method for getting user pseudonyms
-func (h Handler) getPseudonyms(ctx *gin.Context) {
+// method for getting user channels
+func (h Handler) getChannels(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	user := res.(models.User)
-	ans, err := h.services.Api.GetPseudonyms(user)
+	ans, err := h.services.Api.GetChannels(user)
 
 	if err != nil {
 		ctx.JSON(400, gin.H{})
@@ -24,16 +24,16 @@ func (h Handler) getPseudonyms(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
-// creating a pseudonym for an user
-func (h Handler) createPseudonym(ctx *gin.Context) {
-	var pseudonym models.Pseudonym
-	if err := ctx.BindJSON(&pseudonym); err != nil {
-		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the pseudonym model"))
+// creating a channel for an user
+func (h Handler) createChannel(ctx *gin.Context) {
+	var channel models.Channel
+	if err := ctx.BindJSON(&channel); err != nil {
+		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the channel model"))
 		return
 	}
 	res, _ := ctx.Get("user")
 	user := res.(models.User)
-	if invalid := h.services.Api.CreatePseudonym(pseudonym, user); len(invalid) > 0 {
+	if invalid := h.services.Api.CreateChannel(channel, user); len(invalid) > 0 {
 		if err, ok := invalid["error"]; ok {
 			ctx.AbortWithError(500, errors.New(err))
 		}
@@ -87,9 +87,9 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	var ans interface{}
 	var err error
 
-	// check if needed post should be written by pseudonym, user or all
-	if authorType == "pseudonym" {
-		ans, err = h.services.Api.GetPostsFromPseudonyms(user)
+	// check if needed post should be written by channel, user or all
+	if authorType == "channel" {
+		ans, err = h.services.Api.GetPostsFromChannels(user)
 	} else if authorType == "user" {
 		ans, err = h.services.Api.GetPostsFromUsers(user)
 	} else {
@@ -111,8 +111,8 @@ func (h Handler) follow(ctx *gin.Context) {
 		ctx.AbortWithError(400, err)
 	}
 	var err error
-	if followType == "pseudonym" {
-		err = h.services.FollowPseudonym(user, followed.Username)
+	if followType == "channel" {
+		err = h.services.FollowChannel(user, followed.Username)
 	} else if followType == "user" {
 		err = h.services.FollowUser(user, followed.Username)
 	}
@@ -133,8 +133,8 @@ func (h Handler) unfollow(ctx *gin.Context) {
 	}
 
 	var err error
-	if followType == "pseudonym" {
-		err = h.services.UnfollowPseudonym(user, followed.Username)
+	if followType == "channel" {
+		err = h.services.UnfollowChannel(user, followed.Username)
 	} else if followType == "user" {
 		err = h.services.UnfollowUser(user, followed.Username)
 	}
@@ -152,9 +152,9 @@ func (h Handler) getNewPosts(ctx *gin.Context) {
 	var ans interface{}
 	var err error
 
-	// check if needed post should be written by pseudonym, user or all
-	if authorType == "pseudonym" {
-		ans, err = h.services.Api.GetNewPostsFromPseudonyms(user)
+	// check if needed post should be written by channel, user or all
+	if authorType == "channel" {
+		ans, err = h.services.Api.GetNewPostsFromChannels(user)
 	} else if authorType == "user" {
 		ans, err = h.services.Api.GetNewPostsFromUsers(user)
 	} else {
@@ -178,28 +178,28 @@ func (h Handler) getFollowing(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
-// function for deleting a pseudonym based on its id
-func (h Handler) deletePseudonym(ctx *gin.Context) {
-	var pseudonym models.Pseudonym
-	if err := ctx.BindJSON(&pseudonym); err != nil {
-		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the pseudonym model"))
+// function for deleting a channel based on its id
+func (h Handler) deleteChannel(ctx *gin.Context) {
+	var channel models.Channel
+	if err := ctx.BindJSON(&channel); err != nil {
+		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the channel model"))
 		return
 	}
-	if err := h.services.Api.DeletePseudonym(pseudonym); err != nil {
+	if err := h.services.Api.DeleteChannel(channel); err != nil {
 		ctx.AbortWithError(422, errors.New("invalid data"))
 
 	}
 	ctx.JSON(200, gin.H{})
 }
 
-func (h Handler) updatePseudonym(ctx *gin.Context) {
-	var pseudonym models.Pseudonym
-	if err := ctx.BindJSON(&pseudonym); err != nil {
-		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the pseudonym model"))
+func (h Handler) updateChannel(ctx *gin.Context) {
+	var channel models.Channel
+	if err := ctx.BindJSON(&channel); err != nil {
+		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the channel model"))
 		return
 	}
 
-	if err := h.services.Api.UpdatePseudonym(pseudonym); err != nil {
+	if err := h.services.Api.UpdateChannel(channel); err != nil {
 		ctx.AbortWithError(422, errors.New("invalid data"))
 	}
 

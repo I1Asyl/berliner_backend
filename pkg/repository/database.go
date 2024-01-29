@@ -41,16 +41,16 @@ func (db Database) StartTransaction() Transaction {
 // 	tx.Commit()
 // }
 
-func (db Database) GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error) {
-	var pseudonym models.Pseudonym
-	err := db.Get(&pseudonym, "SELECT * FROM pseudonym WHERE pseudonym_name = ?", pseudonymName)
-	return pseudonym, err
+func (db Database) GetChannelByChannelName(channelName string) (models.Channel, error) {
+	var channel models.Channel
+	err := db.Get(&channel, "SELECT * FROM channel WHERE channel_name = ?", channelName)
+	return channel, err
 }
 
-func (db Transaction) GetPseudonymByPseudonymName(pseudonymName string) (models.Pseudonym, error) {
-	var pseudonym models.Pseudonym
-	err := db.Get(&pseudonym, "SELECT * FROM pseudonym WHERE pseudonym_name = ?", pseudonymName)
-	return pseudonym, err
+func (db Transaction) GetChannelByChannelName(channelName string) (models.Channel, error) {
+	var channel models.Channel
+	err := db.Get(&channel, "SELECT * FROM channel WHERE channel_name = ?", channelName)
+	return channel, err
 }
 
 func (db Database) GetUserByUserame(username string) (models.User, error) {
@@ -64,15 +64,15 @@ func (db Transaction) GetUserByUserame(username string) (models.User, error) {
 	return user, err
 }
 
-func (db Database) GetUserPseudonyms(user models.User) ([]models.Pseudonym, error) {
-	var pseudonyms []models.Pseudonym
-	err := db.Select(&pseudonyms, "SELECT * FROM pseudonym WHERE pseudonym_leader_id = ?", user.Id)
-	return pseudonyms, err
+func (db Database) GetUserChannels(user models.User) ([]models.Channel, error) {
+	var channels []models.Channel
+	err := db.Select(&channels, "SELECT * FROM channel WHERE channel_leader_id = ?", user.Id)
+	return channels, err
 }
-func (db Transaction) GetUserPseudonyms(user models.User) ([]models.Pseudonym, error) {
-	var pseudonyms []models.Pseudonym
-	err := db.Select(&pseudonyms, "SELECT * FROM pseudonym WHERE pseudonym_leader_id = ?", user.Id)
-	return pseudonyms, err
+func (db Transaction) GetUserChannels(user models.User) ([]models.Channel, error) {
+	var channels []models.Channel
+	err := db.Select(&channels, "SELECT * FROM channel WHERE channel_leader_id = ?", user.Id)
+	return channels, err
 }
 
 func (db Database) AddUser(user models.User) error {
@@ -85,20 +85,20 @@ func (db Transaction) AddUser(user models.User) error {
 }
 
 func (db Database) AddMembership(membership models.Membership) error {
-	_, err := db.Exec("INSERT INTO membership (pseudonym_id, user_id, is_editor) VALUES (?, ?, ?)", membership.PseudonymId, membership.UserId, membership.IsEditor)
+	_, err := db.Exec("INSERT INTO membership (channel_id, user_id, is_editor) VALUES (?, ?, ?)", membership.ChannelId, membership.UserId, membership.IsEditor)
 	return err
 }
 func (db Transaction) AddMembership(membership models.Membership) error {
-	_, err := db.Exec("INSERT INTO membership (pseudonym_id, user_id, is_editor) VALUES (?, ?, ?)", membership.PseudonymId, membership.UserId, membership.IsEditor)
+	_, err := db.Exec("INSERT INTO membership (channel_id, user_id, is_editor) VALUES (?, ?, ?)", membership.ChannelId, membership.UserId, membership.IsEditor)
 	return err
 }
 
-func (db Database) AddPseudonym(pseudonym models.Pseudonym) error {
-	_, err := db.Exec("INSERT INTO pseudonym (pseudonym_name, pseudonym_leader_id, pseudonym_description) VALUES (?, ?, ?)", pseudonym.PseudonymName, pseudonym.PseudonymLeaderId, pseudonym.PseudonymDescription)
+func (db Database) AddChannel(channel models.Channel) error {
+	_, err := db.Exec("INSERT INTO channel (channel_name, channel_leader_id, channel_description) VALUES (?, ?, ?)", channel.ChannelName, channel.ChannelLeaderId, channel.ChannelDescription)
 	return err
 }
-func (db Transaction) AddPseudonym(pseudonym models.Pseudonym) error {
-	_, err := db.Exec("INSERT INTO pseudonym (pseudonym_name, pseudonym_leader_id, pseudonym_description) VALUES (?, ?, ?)", pseudonym.PseudonymName, pseudonym.PseudonymLeaderId, pseudonym.PseudonymDescription)
+func (db Transaction) AddChannel(channel models.Channel) error {
+	_, err := db.Exec("INSERT INTO channel (channel_name, channel_leader_id, channel_description) VALUES (?, ?, ?)", channel.ChannelName, channel.ChannelLeaderId, channel.ChannelDescription)
 	return err
 }
 
@@ -106,9 +106,9 @@ func (db Database) AddUserPost(post models.UserPost) error {
 	_, err := db.Exec("INSERT INTO user_post (author_type, content, updated_at, created_at, user_id, is_public) VALUES (?, ?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.UserId, post.IsPublic)
 	return err
 }
-func (db Database) AddPseudonymPost(post models.PseudonymPost) error {
-	_, err := db.Exec("INSERT INTO pseudonym_post (author_type, content, updated_at, created_at, pseudonym_id, is_public) VALUES (?, ?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.PseudonymId, post.IsPublic)
-	fmt.Println(post.PseudonymId)
+func (db Database) AddChannelPost(post models.ChannelPost) error {
+	_, err := db.Exec("INSERT INTO channel_post (author_type, content, updated_at, created_at, channel_id, is_public) VALUES (?, ?, ?, ?, ?, ?);", post.AuthorType, post.Content, post.UpdatedAt, post.CreatedAt, post.ChannelId, post.IsPublic)
+	fmt.Println(post.ChannelId)
 	return err
 }
 func (db Database) DeleteUserPost(post models.UserPost) error {
@@ -116,8 +116,8 @@ func (db Database) DeleteUserPost(post models.UserPost) error {
 	return err
 }
 
-func (db Database) DeletePseudonymPost(post models.PseudonymPost) error {
-	_, err := db.Exec("DELETE FROM pseudonym_post WHERE id = ?;", post.Id)
+func (db Database) DeleteChannelPost(post models.ChannelPost) error {
+	_, err := db.Exec("DELETE FROM channel_post WHERE id = ?;", post.Id)
 	return err
 }
 
@@ -137,17 +137,17 @@ func (db Database) GetUserPosts(user models.User) ([]struct {
 
 }
 
-func (db Database) GetPseudonymPosts(user models.User) ([]struct {
-	models.Pseudonym
-	models.PseudonymPost
+func (db Database) GetChannelPosts(user models.User) ([]struct {
+	models.Channel
+	models.ChannelPost
 }, error) {
 	//var posts []models.UserPost
-	pseudonyms := "SELECT membership.pseudonym_id FROM membership WHERE membership.user_id=?"
+	channels := "SELECT membership.channel_id FROM membership WHERE membership.user_id=?"
 	var newTable []struct {
-		models.Pseudonym
-		models.PseudonymPost
+		models.Channel
+		models.ChannelPost
 	}
-	err := db.Select(&newTable, fmt.Sprintf("SELECT pseudonym_post.*, pseudonym.pseudonym_name, pseudonym.pseudonym_leader_id FROM pseudonym_post LEFT JOIN pseudonym on pseudonym_post.pseudonym_id = pseudonym.id WHERE pseudonym_post.pseudonym_id in (%v) AND (pseudonym_post.is_public OR pseudonym.pseudonym_leader_id = ?) ORDER BY updated_at DESC", pseudonyms), user.Id, user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT channel_post.*, channel.channel_name, channel.channel_leader_id FROM channel_post LEFT JOIN channel on channel_post.channel_id = channel.id WHERE channel_post.channel_id in (%v) AND (channel_post.is_public OR channel.channel_leader_id = ?) ORDER BY updated_at DESC", channels), user.Id, user.Id)
 	return newTable, err
 
 }
@@ -167,24 +167,24 @@ func (db Database) GetNewUserPosts(user models.User) ([]struct {
 	return newTable, err
 }
 
-func (db Database) GetNewPseudonymPosts(user models.User) ([]struct {
-	models.Pseudonym
-	models.PseudonymPost
+func (db Database) GetNewChannelPosts(user models.User) ([]struct {
+	models.Channel
+	models.ChannelPost
 }, error) {
 	//var posts []models.UserPost
-	users := "SELECT membership.pseudonym_id FROM membership WHERE membership.user_id=?"
+	users := "SELECT membership.channel_id FROM membership WHERE membership.user_id=?"
 	var newTable []struct {
-		models.Pseudonym
-		models.PseudonymPost
+		models.Channel
+		models.ChannelPost
 	}
 
-	err := db.Select(&newTable, fmt.Sprintf("SELECT pseudonym_post.*, pseudonym.pseudonym_name FROM pseudonym_post LEFT JOIN pseudonym on pseudonym_post.pseudonym_id = pseudonym.id WHERE pseudonym_post.pseudonym_id NOT in (%v) AND pseudonym_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT channel_post.*, channel.channel_name FROM channel_post LEFT JOIN channel on channel_post.channel_id = channel.id WHERE channel_post.channel_id NOT in (%v) AND channel_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id)
 	return newTable, err
 }
 
-func (db Database) FollowPseudonym(user models.User, pseudonym models.Pseudonym) error {
-	query := "INSERT INTO membership (pseudonym_id, user_id, is_editor) VALUES (?, ?, ?)"
-	_, err := db.Exec(query, pseudonym.Id, user.Id, 0)
+func (db Database) FollowChannel(user models.User, channel models.Channel) error {
+	query := "INSERT INTO membership (channel_id, user_id, is_editor) VALUES (?, ?, ?)"
+	_, err := db.Exec(query, channel.Id, user.Id, 0)
 	return err
 }
 func (db Database) FollowUser(follower models.User, user models.User) error {
@@ -193,9 +193,9 @@ func (db Database) FollowUser(follower models.User, user models.User) error {
 	return err
 }
 
-func (db Database) UnfollowPseudonym(user models.User, pseudonym models.Pseudonym) error {
-	query := "DELETE FROM membership WHERE pseudonym_id = ? AND user_id = ?"
-	_, err := db.Exec(query, pseudonym.Id, user.Id)
+func (db Database) UnfollowChannel(user models.User, channel models.Channel) error {
+	query := "DELETE FROM membership WHERE channel_id = ? AND user_id = ?"
+	_, err := db.Exec(query, channel.Id, user.Id)
 	return err
 }
 func (db Database) UnfollowUser(follower models.User, user models.User) error {
@@ -210,8 +210,8 @@ func (db Database) GetFollowing(user models.User) ([]models.User, error) {
 	return users, err
 }
 
-func (db Database) DeletePseudonym(pseudonym models.Pseudonym) error {
-	_, err := db.Exec("DELETE FROM pseudonym WHERE pseudonym_id = ?", pseudonym.Id)
+func (db Database) DeleteChannel(channel models.Channel) error {
+	_, err := db.Exec("DELETE FROM channel WHERE channel_id = ?", channel.Id)
 	return err
 }
 
@@ -220,15 +220,15 @@ func (db Database) AddFollowing(following models.Following) error {
 	return err
 }
 
-func (db Database) UpdatePseudonym(pseudonym models.Pseudonym) error {
-	if pseudonym.PseudonymName != "" {
-		_, err := db.Exec("UPDATE pseudonym SET pseudonym_name = ? WHERE pseudonym_id = ?", pseudonym.PseudonymName, pseudonym.Id)
+func (db Database) UpdateChannel(channel models.Channel) error {
+	if channel.ChannelName != "" {
+		_, err := db.Exec("UPDATE channel SET channel_name = ? WHERE channel_id = ?", channel.ChannelName, channel.Id)
 		if err != nil {
 			return err
 		}
 	}
-	if pseudonym.PseudonymDescription != "" {
-		_, err := db.Exec("UPDATE pseudonym SET pseudonym_description = ? WHERE pseudonym_id = ?", pseudonym.PseudonymName, pseudonym.Id)
+	if channel.ChannelDescription != "" {
+		_, err := db.Exec("UPDATE channel SET channel_description = ? WHERE channel_id = ?", channel.ChannelName, channel.Id)
 		if err != nil {
 			return err
 		}
