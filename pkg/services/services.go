@@ -20,15 +20,15 @@ type Authorization interface {
 
 // all api services
 type Api interface {
-	FollowChannel(user models.User, channelName string) error
+	FollowChannel(user models.User, name string) error
 	FollowUser(follower models.User, userName string) error
-	UnfollowChannel(user models.User, channelName string) error
+	UnfollowChannel(user models.User, name string) error
 	UnfollowUser(follower models.User, userName string) error
 	DeleteChannel(channel models.Channel) error
 	UpdateChannel(channel models.Channel) error
 	GetFollowing(user models.User) ([]models.User, error)
 	GetUserByUsername(username string) (models.User, error)
-	GetChannelByChannelName(channelName string) (models.Channel, error)
+	GetChannelByName(name string) (models.Channel, error)
 	CreatePost(post models.Post, autthorId int) map[string]string
 	DeletePost(post models.Post) error
 	GetPostsFromChannels(user models.User) ([]struct {

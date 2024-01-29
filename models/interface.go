@@ -35,11 +35,11 @@ func (user User) IsValid() map[string]string {
 func (channel Channel) IsValid() map[string]string {
 	validMap := make(map[string]string)
 
-	if !validName(channel.ChannelName) {
-		validMap["channelName"] = "Invalid channel name"
+	if !validName(channel.Name) {
+		validMap["name"] = "Invalid channel name"
 	}
-	if channel.ChannelDescription == "" {
-		validMap["channelDescription"] = "Channel description can not be empty"
+	if channel.Description == "" {
+		validMap["description"] = "Channel description can not be empty"
 	}
 	return validMap
 }

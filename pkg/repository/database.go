@@ -41,15 +41,15 @@ func (db Database) StartTransaction() Transaction {
 // 	tx.Commit()
 // }
 
-func (db Database) GetChannelByChannelName(channelName string) (models.Channel, error) {
+func (db Database) GetChannelByName(name string) (models.Channel, error) {
 	var channel models.Channel
-	err := db.Get(&channel, "SELECT * FROM channel WHERE channel_name = ?", channelName)
+	err := db.Get(&channel, "SELECT * FROM channel WHERE name = ?", name)
 	return channel, err
 }
 
-func (db Transaction) GetChannelByChannelName(channelName string) (models.Channel, error) {
+func (db Transaction) GetChannelByName(name string) (models.Channel, error) {
 	var channel models.Channel
-	err := db.Get(&channel, "SELECT * FROM channel WHERE channel_name = ?", channelName)
+	err := db.Get(&channel, "SELECT * FROM channel WHERE name = ?", name)
 	return channel, err
 }
 
@@ -66,12 +66,12 @@ func (db Transaction) GetUserByUserame(username string) (models.User, error) {
 
 func (db Database) GetUserChannels(user models.User) ([]models.Channel, error) {
 	var channels []models.Channel
-	err := db.Select(&channels, "SELECT * FROM channel WHERE channel_leader_id = ?", user.Id)
+	err := db.Select(&channels, "SELECT * FROM channel WHERE leader_id = ?", user.Id)
 	return channels, err
 }
 func (db Transaction) GetUserChannels(user models.User) ([]models.Channel, error) {
 	var channels []models.Channel
-	err := db.Select(&channels, "SELECT * FROM channel WHERE channel_leader_id = ?", user.Id)
+	err := db.Select(&channels, "SELECT * FROM channel WHERE leader_id = ?", user.Id)
 	return channels, err
 }
 
@@ -94,11 +94,11 @@ func (db Transaction) AddMembership(membership models.Membership) error {
 }
 
 func (db Database) AddChannel(channel models.Channel) error {
-	_, err := db.Exec("INSERT INTO channel (channel_name, channel_leader_id, channel_description) VALUES (?, ?, ?)", channel.ChannelName, channel.ChannelLeaderId, channel.ChannelDescription)
+	_, err := db.Exec("INSERT INTO channel (name, leader_id, description) VALUES (?, ?, ?)", channel.Name, channel.LeaderId, channel.Description)
 	return err
 }
 func (db Transaction) AddChannel(channel models.Channel) error {
-	_, err := db.Exec("INSERT INTO channel (channel_name, channel_leader_id, channel_description) VALUES (?, ?, ?)", channel.ChannelName, channel.ChannelLeaderId, channel.ChannelDescription)
+	_, err := db.Exec("INSERT INTO channel (name, leader_id, description) VALUES (?, ?, ?)", channel.Name, channel.LeaderId, channel.Description)
 	return err
 }
 
@@ -147,7 +147,7 @@ func (db Database) GetChannelPosts(user models.User) ([]struct {
 		models.Channel
 		models.ChannelPost
 	}
-	err := db.Select(&newTable, fmt.Sprintf("SELECT channel_post.*, channel.channel_name, channel.channel_leader_id FROM channel_post LEFT JOIN channel on channel_post.channel_id = channel.id WHERE channel_post.channel_id in (%v) AND (channel_post.is_public OR channel.channel_leader_id = ?) ORDER BY updated_at DESC", channels), user.Id, user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT channel_post.*, channel.name, channel.leader_id FROM channel_post LEFT JOIN channel on channel_post.channel_id = channel.id WHERE channel_post.channel_id in (%v) AND (channel_post.is_public OR channel.leader_id = ?) ORDER BY updated_at DESC", channels), user.Id, user.Id)
 	return newTable, err
 
 }
@@ -178,7 +178,7 @@ func (db Database) GetNewChannelPosts(user models.User) ([]struct {
 		models.ChannelPost
 	}
 
-	err := db.Select(&newTable, fmt.Sprintf("SELECT channel_post.*, channel.channel_name FROM channel_post LEFT JOIN channel on channel_post.channel_id = channel.id WHERE channel_post.channel_id NOT in (%v) AND channel_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id)
+	err := db.Select(&newTable, fmt.Sprintf("SELECT channel_post.*, channel.name FROM channel_post LEFT JOIN channel on channel_post.channel_id = channel.id WHERE channel_post.channel_id NOT in (%v) AND channel_post.is_public = 1 ORDER BY updated_at DESC", users), user.Id)
 	return newTable, err
 }
 
@@ -221,14 +221,14 @@ func (db Database) AddFollowing(following models.Following) error {
 }
 
 func (db Database) UpdateChannel(channel models.Channel) error {
-	if channel.ChannelName != "" {
-		_, err := db.Exec("UPDATE channel SET channel_name = ? WHERE channel_id = ?", channel.ChannelName, channel.Id)
+	if channel.Name != "" {
+		_, err := db.Exec("UPDATE channel SET name = ? WHERE channel_id = ?", channel.Name, channel.Id)
 		if err != nil {
 			return err
 		}
 	}
-	if channel.ChannelDescription != "" {
-		_, err := db.Exec("UPDATE channel SET channel_description = ? WHERE channel_id = ?", channel.ChannelName, channel.Id)
+	if channel.Description != "" {
+		_, err := db.Exec("UPDATE channel SET description = ? WHERE channel_id = ?", channel.Name, channel.Id)
 		if err != nil {
 			return err
 		}

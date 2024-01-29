@@ -20,9 +20,9 @@ func NewApiService(repo repository.Repository) *ApiService {
 // gets Channel model by its name in the transaction
 
 // gets Channel model by its name from the database
-func (a ApiService) GetChannelByChannelName(channelName string) (models.Channel, error) {
+func (a ApiService) GetChannelByName(name string) (models.Channel, error) {
 	var channel models.Channel
-	channel, err := a.repo.SqlQueries.GetChannelByChannelName(channelName)
+	channel, err := a.repo.SqlQueries.GetChannelByName(name)
 
 	return channel, err
 }
@@ -48,15 +48,15 @@ func (a ApiService) GetChannels(user models.User) ([]models.Channel, error) {
 func (a ApiService) CreateChannel(channel models.Channel, user models.User) map[string]string {
 
 	invalid := channel.IsValid()
-	channel.ChannelLeaderId = user.Id
+	channel.LeaderId = user.Id
 	tx := a.repo.SqlQueries.StartTransaction()
 
 	if len(invalid) == 0 {
 		if err := tx.AddChannel(channel); err != nil {
 			invalid["error"] = err.Error()
 		} else {
-			channel, _ = tx.GetChannelByChannelName(channel.ChannelName)
-			membership := models.Membership{UserId: channel.ChannelLeaderId, ChannelId: channel.Id, IsEditor: true}
+			channel, _ = tx.GetChannelByName(channel.Name)
+			membership := models.Membership{UserId: channel.LeaderId, ChannelId: channel.Id, IsEditor: true}
 			tx.AddMembership(membership)
 
 		}
@@ -124,8 +124,8 @@ func (a ApiService) GetNewPostsFromChannels(user models.User) ([]struct {
 	return posts, err
 }
 
-func (a ApiService) FollowChannel(user models.User, channelName string) error {
-	channel, err := a.GetChannelByChannelName(channelName)
+func (a ApiService) FollowChannel(user models.User, name string) error {
+	channel, err := a.GetChannelByName(name)
 	if err != nil {
 		return err
 	}
@@ -140,8 +140,8 @@ func (a ApiService) FollowUser(follower models.User, userName string) error {
 	return a.repo.FollowUser(follower, user)
 }
 
-func (a ApiService) UnfollowChannel(user models.User, channelName string) error {
-	channel, err := a.GetChannelByChannelName(channelName)
+func (a ApiService) UnfollowChannel(user models.User, name string) error {
+	channel, err := a.GetChannelByName(name)
 
 	if err != nil {
 		return err

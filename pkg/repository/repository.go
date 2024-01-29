@@ -10,8 +10,8 @@ type SqlQueries interface {
 	FollowUser(follower models.User, user models.User) error	
 	UnfollowChannel(user models.User, channel models.Channel) error
 	UnfollowUser(follower models.User, user models.User) error
-	GetChannelByChannelName(channelName string) (models.Channel, error)
-	GetUserByUserame(channelName string) (models.User, error)
+	GetChannelByName(name string) (models.Channel, error)
+	GetUserByUserame(name string) (models.User, error)
 	GetUserChannels(user models.User) ([]models.Channel, error)
 	AddMembership(models.Membership) error
 	AddUser(models.User) error

@@ -10,11 +10,11 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 CREATE TABLE IF NOT EXISTS `channel`(
   `id` INT NOT NULL AUTO_INCREMENT,
-  `channel_name` VARCHAR(255) UNIQUE NOT NULL,
-  `channel_leader_id` INT DEFAULT NULL,
-  `channel_description` TEXT NOT NULL,
+  `name` VARCHAR(255) UNIQUE NOT NULL,
+  `leader_id` INT DEFAULT NULL,
+  `description` TEXT NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`channel_leader_id`) REFERENCES `user`(`id`) ON DELETE SET DEFAULT
+    FOREIGN KEY (`leader_id`) REFERENCES `user`(`id`) ON DELETE SET DEFAULT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `membership`(

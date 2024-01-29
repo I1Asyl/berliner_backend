@@ -31,9 +31,9 @@ func (ni *NullInt64) UnmarshalJSON(b []byte) error {
 
 type Channel struct {
 	Id              int    `json:"id" db:"id"`
-	ChannelLeaderId    int    `json:"channelLeaderId" db:"channel_leader_id"`
-	ChannelName        string `json:"channelName" db:"channel_name"`
-	ChannelDescription string `json:"channelDescription" db:"channel_description"`
+	LeaderId    int    `json:"leaderId" db:"leader_id"`
+	Name        string `json:"name" db:"name"`
+	Description string `json:"description" db:"description"`
 }
 
 type User struct {

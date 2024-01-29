@@ -295,9 +295,9 @@ func TestCreateChannel(t *testing.T) {
 		{
 			name: "success",
 			channel: models.Channel{
-				ChannelName:        "Channel",
-				ChannelLeaderId:    1,
-				ChannelDescription: "hoho",
+				Name:        "Channel",
+				LeaderId:    1,
+				Description: "hoho",
 			},
 			channelLeader: testUser,
 			expected:   map[string]string{},
@@ -305,13 +305,13 @@ func TestCreateChannel(t *testing.T) {
 		{
 			name: "error",
 			channel: models.Channel{
-				ChannelName:        "Channel",
-				ChannelLeaderId:    1,
-				ChannelDescription: "",
+				Name:        "Channel",
+				LeaderId:    1,
+				Description: "",
 			},
 			channelLeader: testUser,
 			expected: map[string]string{
-				"channelDescription": "Channel description can not be empty",
+				"description": "Channel description can not be empty",
 			},
 		},
 	}
@@ -337,25 +337,25 @@ func TestCreateChannel(t *testing.T) {
 }
 
 // gets Channel model by its name in the transaction
-func TestGetChannelByChannelName(t *testing.T) {
+func TestGetChannelByName(t *testing.T) {
 	testTable := []struct {
 		name     string
-		channelName string
+		name string
 		expected models.Channel
 	}{
 		{
 			name:     "success",
-			channelName: "Channel",
+			name: "Channel",
 			expected: models.Channel{
-				ChannelName:        "Channel",
-				ChannelLeaderId:    1,
-				ChannelDescription: "hoho",
+				Name:        "Channel",
+				LeaderId:    1,
+				Description: "hoho",
 				Id:              1,
 			},
 		},
 		{
 			name:     "error1",
-			channelName: "213",
+			name: "213",
 			expected: models.Channel{},
 		},
 	}
@@ -365,12 +365,12 @@ func TestGetChannelByChannelName(t *testing.T) {
 	}
 	services.AddUser(testUser)
 	services.CreateChannel(models.Channel{
-		ChannelName:        "Channel",
-		ChannelLeaderId:    1,
-		ChannelDescription: "hoho",
+		Name:        "Channel",
+		LeaderId:    1,
+		Description: "hoho",
 	}, testUser)
 	for _, testCase := range testTable {
-		channel, _ := services.GetChannelByChannelName(testCase.channelName)
+		channel, _ := services.GetChannelByName(testCase.name)
 		if !reflect.DeepEqual(channel, testCase.expected) {
 			t.Errorf("Expected %v, got %v", testCase.expected, channel)
 		}
@@ -421,15 +421,15 @@ func TestGetUserByUsername(t *testing.T) {
 // func (a ApiService) CreateChannel(channel models.Channel, user models.User) map[string]string {
 
 // 	invalid := channel.IsValid()
-// 	channel.ChannelLeaderId = user.Id
+// 	channel.LeaderId = user.Id
 // 	tx := a.repo.SqlQueries.StartTransaction()
 
 // 	if len(invalid) == 0 {
 // 		if err := tx.AddChannel(channel); err != nil {
 // 			invalid["common"] = err.Error()
 // 		} else {
-// 			channel, _ = tx.GetChannelByChannelName(channel.ChannelName)
-// 			membership := models.Membership{UserId: channel.ChannelLeaderId, ChannelId: channel.Id, IsEditor: true}
+// 			channel, _ = tx.GetChannelByName(channel.Name)
+// 			membership := models.Membership{UserId: channel.LeaderId, ChannelId: channel.Id, IsEditor: true}
 // 			tx.AddMembership(membership)
 
 // 		}
