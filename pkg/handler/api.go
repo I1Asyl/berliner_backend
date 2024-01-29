@@ -24,6 +24,7 @@ func (h Handler) getChannels(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
+
 // creating a channel for an user
 func (h Handler) createChannel(ctx *gin.Context) {
 	var channel models.Channel
@@ -50,7 +51,7 @@ func (h Handler) createPost(ctx *gin.Context) {
 	var post models.Post
 	id, err := strconv.Atoi(ctx.Query("id"))
 	if err != nil {
-		ctx.AbortWithError(400, errors.New("invalid id"))
+		ctx.AbortWithError(400, err)
 	}
 	if err := ctx.BindJSON(&post); err != nil {
 		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the post model"))
@@ -101,6 +102,17 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	}
 	ctx.JSON(200, ans)
 }
+
+func(h Handler) getMyChannelPosts(ctx *gin.Context) {
+	res, _ := ctx.Get("user")
+	user := res.(models.User)
+	ans, err := h.services.Api.GetPostsFromMyChannels(user)
+	if err != nil {
+		ctx.AbortWithError(400, err)
+		return
+	}
+	ctx.JSON(200, ans)
+} 
 
 func (h Handler) follow(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
@@ -182,11 +194,11 @@ func (h Handler) getFollowing(ctx *gin.Context) {
 func (h Handler) deleteChannel(ctx *gin.Context) {
 	var channel models.Channel
 	if err := ctx.BindJSON(&channel); err != nil {
-		ctx.AbortWithError(401, errors.New("input json can not be marshalled to the channel model"))
+		ctx.AbortWithError(401, err)
 		return
 	}
 	if err := h.services.Api.DeleteChannel(channel); err != nil {
-		ctx.AbortWithError(422, errors.New("invalid data"))
+		ctx.AbortWithError(422, err)
 
 	}
 	ctx.JSON(200, gin.H{})
@@ -200,7 +212,7 @@ func (h Handler) updateChannel(ctx *gin.Context) {
 	}
 
 	if err := h.services.Api.UpdateChannel(channel); err != nil {
-		ctx.AbortWithError(422, errors.New("invalid data"))
+		ctx.AbortWithError(422, err)
 	}
 
 	ctx.JSON(200, gin.H{})

@@ -95,6 +95,8 @@ func (h *Handler) InitRouter() *gin.Engine {
 		private.GET("/post", h.getPosts)
 		private.DELETE("/post", h.deletePost)
 
+		private.GET("/myPost", h.getMyChannelPosts)
+
 		private.POST("/follow", h.follow)
 		private.DELETE("/follow", h.unfollow)
 

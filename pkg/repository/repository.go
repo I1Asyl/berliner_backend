@@ -22,6 +22,10 @@ type SqlQueries interface {
 	DeleteChannelPost(post models.ChannelPost) error
 	AddFollowing(following models.Following) error
 	StartTransaction() Transaction
+	GetMyChannelPosts(user models.User) ([]struct {
+		models.Channel
+		models.ChannelPost
+	}, error) 
 	GetChannelPosts(user models.User) ([]struct {
 		models.Channel
 		models.ChannelPost

@@ -31,6 +31,10 @@ type Api interface {
 	GetChannelByName(name string) (models.Channel, error)
 	CreatePost(post models.Post, autthorId int) map[string]string
 	DeletePost(post models.Post) error
+	GetPostsFromMyChannels(user models.User) ([]struct {
+		models.Channel
+		models.ChannelPost
+	}, error)
 	GetPostsFromChannels(user models.User) ([]struct {
 		models.Channel
 		models.ChannelPost

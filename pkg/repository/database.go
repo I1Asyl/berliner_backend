@@ -151,6 +151,19 @@ func (db Database) GetChannelPosts(user models.User) ([]struct {
 	return newTable, err
 
 }
+func (db Database) GetMyChannelPosts(user models.User) ([]struct {
+	models.Channel
+	models.ChannelPost
+}, error) {
+	//var posts []models.UserPost
+	var newTable []struct {
+		models.Channel
+		models.ChannelPost
+	}
+	err := db.Select(&newTable, "SELECT channel_post.*, channel.name, channel.leader_id FROM channel_post LEFT JOIN channel on channel_post.channel_id = channel.id WHERE channel.leader_id = ? ORDER BY updated_at DESC", user.Id)
+	return newTable, err
+
+}
 
 func (db Database) GetNewUserPosts(user models.User) ([]struct {
 	models.User
@@ -211,7 +224,7 @@ func (db Database) GetFollowing(user models.User) ([]models.User, error) {
 }
 
 func (db Database) DeleteChannel(channel models.Channel) error {
-	_, err := db.Exec("DELETE FROM channel WHERE channel_id = ?", channel.Id)
+	_, err := db.Exec("DELETE FROM channel WHERE id = ?", channel.Id)
 	return err
 }
 

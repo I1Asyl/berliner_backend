@@ -116,6 +116,14 @@ func (a ApiService) GetPostsFromChannels(user models.User) ([]struct {
 	return posts, err
 }
 
+func (a ApiService) GetPostsFromMyChannels(user models.User) ([]struct {
+	models.Channel
+	models.ChannelPost
+}, error) {
+	posts, err := a.repo.SqlQueries.GetMyChannelPosts(user)
+	return posts, err
+}
+
 func (a ApiService) GetNewPostsFromChannels(user models.User) ([]struct {
 	models.Channel
 	models.ChannelPost

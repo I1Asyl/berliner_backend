@@ -35,7 +35,7 @@ func (user User) IsValid() map[string]string {
 func (channel Channel) IsValid() map[string]string {
 	validMap := make(map[string]string)
 
-	if !validName(channel.Name) {
+	if !validChannelName(channel.Name) {
 		validMap["name"] = "Invalid channel name"
 	}
 	if channel.Description == "" {
@@ -84,6 +84,12 @@ func validUsername(username string) bool {
 
 func validName(name string) bool {
 	pattern := "^[A-Z]+[a-z]{1,25}$"
+	ans, _ := regexp.MatchString(pattern, name)
+	return ans
+}
+
+func validChannelName(name string) bool {
+	pattern := "^[A-Z]+[a-z]{1,25}/[A-Z]+[a-z]{1,25}$"
 	ans, _ := regexp.MatchString(pattern, name)
 	return ans
 }
