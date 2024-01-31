@@ -89,7 +89,7 @@ func validName(name string) bool {
 }
 
 func validChannelName(name string) bool {
-	pattern := "^[A-Z]+[a-z]{1,25}/[A-Z]+[a-z]{1,25}$"
+	pattern := "^[a-zA-Z0-9_]{4,25}/[A-Z]+[a-z]{1,25}$"
 	ans, _ := regexp.MatchString(pattern, name)
 	return ans
 }
