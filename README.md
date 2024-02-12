@@ -10,7 +10,7 @@ Backend of the application for sharing your hobbies effectively.
 - Replace `config.yaml` values with your own database information. 
 - Create a `.env` file inside configs folder with variables named `DB_PASSWORD` and `JWT_SECRET` for database user password and JWT secret respectively. 
 - Run `make database_up` to create all needed tables for the application. 
-- Run `make database_down` to delete all existing databases used by application. 
+- Run `make database_down` if you want to delete all existing databases used by application and run `database_up` again to start fresh databases. 
 - Run `make get` or `go get` to install all needed libraries. 
 - Run `make` to run backend to test it. 
 - Run `make build` to build an executable named `bin` inside a folder or use your custom `go build` command.  
