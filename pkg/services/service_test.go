@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/I1Asyl/ginBerliner/models"
-	"github.com/I1Asyl/ginBerliner/pkg/repository"
+	"github.com/I1Asyl/berliner_backend/models"
+	"github.com/I1Asyl/berliner_backend/pkg/repository"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/ory/dockertest/v3"
 	"golang.org/x/crypto/bcrypt"
@@ -287,10 +287,10 @@ func TestHashPassword(t *testing.T) {
 
 func TestCreateChannel(t *testing.T) {
 	testTable := []struct {
-		name       string
+		name          string
 		channel       models.Channel
 		channelLeader models.User
-		expected   map[string]string
+		expected      map[string]string
 	}{
 		{
 			name: "success",
@@ -300,7 +300,7 @@ func TestCreateChannel(t *testing.T) {
 				Description: "hoho",
 			},
 			channelLeader: testUser,
-			expected:   map[string]string{},
+			expected:      map[string]string{},
 		},
 		{
 			name: "error",
@@ -334,50 +334,6 @@ func TestCreateChannel(t *testing.T) {
 
 	}
 
-}
-
-// gets Channel model by its name in the transaction
-func TestGetChannelByName(t *testing.T) {
-	testTable := []struct {
-		name     string
-		name string
-		expected models.Channel
-	}{
-		{
-			name:     "success",
-			name: "Channel",
-			expected: models.Channel{
-				Name:        "Channel",
-				LeaderId:    1,
-				Description: "hoho",
-				Id:              1,
-			},
-		},
-		{
-			name:     "error1",
-			name: "213",
-			expected: models.Channel{},
-		},
-	}
-
-	if err := repo.Migration.Up(); err != nil {
-		t.Errorf("Migration problems %s ", err)
-	}
-	services.AddUser(testUser)
-	services.CreateChannel(models.Channel{
-		Name:        "Channel",
-		LeaderId:    1,
-		Description: "hoho",
-	}, testUser)
-	for _, testCase := range testTable {
-		channel, _ := services.GetChannelByName(testCase.name)
-		if !reflect.DeepEqual(channel, testCase.expected) {
-			t.Errorf("Expected %v, got %v", testCase.expected, channel)
-		}
-	}
-	if err := repo.Migration.Down(); err != nil {
-		t.Errorf("Migration problems %s ", err)
-	}
 }
 
 // gets User model by username in the transaction

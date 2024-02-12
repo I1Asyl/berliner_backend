@@ -3,8 +3,8 @@ package services
 import (
 	"time"
 
-	"github.com/I1Asyl/ginBerliner/models"
-	"github.com/I1Asyl/ginBerliner/pkg/repository"
+	"github.com/I1Asyl/berliner_backend/models"
+	"github.com/I1Asyl/berliner_backend/pkg/repository"
 )
 
 //go:generate mockgen -source=services.go -destination=mocks/services.go

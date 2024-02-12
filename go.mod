@@ -1,4 +1,4 @@
-module github.com/I1Asyl/ginBerliner
+module github.com/I1Asyl/berliner_backend
 
 go 1.20
 

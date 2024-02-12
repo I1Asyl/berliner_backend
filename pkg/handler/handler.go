@@ -4,8 +4,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/I1Asyl/ginBerliner/models"
-	"github.com/I1Asyl/ginBerliner/pkg/services"
+	"github.com/I1Asyl/berliner_backend/models"
+	"github.com/I1Asyl/berliner_backend/pkg/services"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

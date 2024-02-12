@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/I1Asyl/ginBerliner/models"
+	"github.com/I1Asyl/berliner_backend/models"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jmoiron/sqlx"

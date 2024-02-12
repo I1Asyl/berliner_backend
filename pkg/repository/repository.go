@@ -1,13 +1,13 @@
 package repository
 
 import (
-	"github.com/I1Asyl/ginBerliner/models"
+	"github.com/I1Asyl/berliner_backend/models"
 	"github.com/golang-migrate/migrate/v4"
 )
 
 type SqlQueries interface {
 	FollowChannel(user models.User, channel models.Channel) error
-	FollowUser(follower models.User, user models.User) error	
+	FollowUser(follower models.User, user models.User) error
 	UnfollowChannel(user models.User, channel models.Channel) error
 	UnfollowUser(follower models.User, user models.User) error
 	GetChannelByName(name string) (models.Channel, error)
@@ -25,7 +25,7 @@ type SqlQueries interface {
 	GetMyChannelPosts(user models.User) ([]struct {
 		models.Channel
 		models.ChannelPost
-	}, error) 
+	}, error)
 	GetChannelPosts(user models.User) ([]struct {
 		models.Channel
 		models.ChannelPost

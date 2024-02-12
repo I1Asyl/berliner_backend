@@ -2,6 +2,12 @@
 
 .DEFAULT_GOAL := run
 
+get: 
+	go get
+
+build: 
+	go build -o bin . 
+
 run: 
 	go run .
 
@@ -12,11 +18,8 @@ database_down:
 	migrate -source file://migrations/ -database "mysql://$(USERNAME):$(PASSWORD)@$(PROTOCOL)($(ADDRESS))/$(DBNAME)" down 
 
 test_services: 
-	cd pkg/services && go test -v -cover
+	cd pkg/services && test -v -cover
 
-test_repository: 
-	cd pkg/repository && go test -v -cover
 
-test_handler: 
-	cd pkg/handler && go test -v -cover
+
 

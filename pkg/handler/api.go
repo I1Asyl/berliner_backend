@@ -6,7 +6,7 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/I1Asyl/ginBerliner/models"
+	"github.com/I1Asyl/berliner_backend/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,7 +23,6 @@ func (h Handler) getChannels(ctx *gin.Context) {
 
 	ctx.JSON(200, ans)
 }
-
 
 // creating a channel for an user
 func (h Handler) createChannel(ctx *gin.Context) {
@@ -103,7 +102,7 @@ func (h Handler) getPosts(ctx *gin.Context) {
 	ctx.JSON(200, ans)
 }
 
-func(h Handler) getMyChannelPosts(ctx *gin.Context) {
+func (h Handler) getMyChannelPosts(ctx *gin.Context) {
 	res, _ := ctx.Get("user")
 	user := res.(models.User)
 	ans, err := h.services.Api.GetPostsFromMyChannels(user)
@@ -112,7 +111,7 @@ func(h Handler) getMyChannelPosts(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, ans)
-} 
+}
 
 func (h Handler) follow(ctx *gin.Context) {
 	res, _ := ctx.Get("user")

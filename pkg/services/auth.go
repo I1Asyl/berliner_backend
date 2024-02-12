@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/I1Asyl/ginBerliner/models"
-	"github.com/I1Asyl/ginBerliner/pkg/repository"
+	"github.com/I1Asyl/berliner_backend/models"
+	"github.com/I1Asyl/berliner_backend/pkg/repository"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )

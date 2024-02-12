@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/I1Asyl/ginBerliner/pkg/handler"
-	"github.com/I1Asyl/ginBerliner/pkg/repository"
-	"github.com/I1Asyl/ginBerliner/pkg/services"
+	"github.com/I1Asyl/berliner_backend/pkg/handler"
+	"github.com/I1Asyl/berliner_backend/pkg/repository"
+	"github.com/I1Asyl/berliner_backend/pkg/services"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )

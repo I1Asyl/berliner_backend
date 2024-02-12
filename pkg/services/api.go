@@ -2,8 +2,9 @@ package services
 
 import (
 	"time"
-	"github.com/I1Asyl/ginBerliner/models"
-	"github.com/I1Asyl/ginBerliner/pkg/repository"
+
+	"github.com/I1Asyl/berliner_backend/models"
+	"github.com/I1Asyl/berliner_backend/pkg/repository"
 )
 
 // api service struct
@@ -106,7 +107,6 @@ func (a ApiService) DeletePost(post models.Post) error {
 	}
 	return err
 }
-
 
 func (a ApiService) GetPostsFromChannels(user models.User) ([]struct {
 	models.Channel
